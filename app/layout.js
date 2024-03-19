@@ -1,5 +1,7 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { libre_caslon_display } from '@/app/ui/fonts';
+import { libre_caslon_display_bold } from '@/app/ui/fonts';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -11,7 +13,32 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className="overflow-hidden">
+        <div className="flex">
+          <div>
+            <div className="h-[150px] w-[200px] bg-black flex items-center border-b-4 border-b-white padding-left-2">
+              <p className={`text-white text-3xl pl-8 ${libre_caslon_display.className}`}>
+                Tally.ai
+              </p>
+            </div>
+            <div className="h-screen w-[200px] bg-black flex-col items-start">
+              <p className="text-white pl-14 pt-8">
+                Home
+              </p>
+              <p className="text-white pl-14 pt-3">
+                Prospecting
+              </p>
+              <p className="text-white pl-14 pt-3">
+                Settings
+              </p>
+              <p className="text-white pl-14 pt-3">
+                Logout
+              </p>
+            </div>
+          </div>
+          <div className="min-w-full">{children}</div>
+        </div>
+      </body>
     </html>
   );
 }
