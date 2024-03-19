@@ -7,7 +7,7 @@ import Navbar from "@/app/ui/Navbar";
 export default function Home() {
   return (
     <div className="min-w-full">
-     <Navbar url="Settings"/>
+     <Navbar url="Prospecting / New Search" button={{title:'Export List'}}/>
     </div>
   );
 }
