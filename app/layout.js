@@ -2,6 +2,10 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { libre_caslon_display } from '@/app/ui/fonts';
 import { libre_caslon_display_thin } from '@/app/ui/fonts';
+import { HomeIcon } from '@heroicons/react/24/solid'
+import { MagnifyingGlassCircleIcon } from '@heroicons/react/24/solid'
+import { Cog6ToothIcon } from '@heroicons/react/24/solid'
+import { XCircleIcon } from '@heroicons/react/24/solid'
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,23 +21,44 @@ export default function RootLayout({ children }) {
         <div className="flex">
           <div>
             <div className="h-40 w-48 bg-black flex items-center border-b-4 border-b-white padding-left-2">
+
               <p className={`text-white text-3xl pl-8 ${libre_caslon_display_thin.className}`}>
                 Tally.ai
               </p>
             </div>
             <div className="absolute top-40 bottom-0 w-48 bg-black flex-col items-start">
-              <p className="text-white pl-14 pt-8">
-                Home
-              </p>
-              <p className="text-white pl-14 pt-3">
-                Prospecting
-              </p>
-              <p className="text-white pl-14 pt-3">
-                Settings
-              </p>
-              <p className="text-white pl-14 pt-3">
-                Logout
-              </p>
+
+              <div className="bg-black pt-8 flex">
+                {
+                  true &&
+                  <div className="bg-purple-700 h-5 w-1"></div>
+                }
+                <div className="flex bg-black absolute left-3 items-center">
+                  <HomeIcon className="h-5 w-5 text-white" />
+                  <p className="text-white pl-3 items-center">
+                    Home
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex bg-black pt-3 pl-3 items-center">
+                <MagnifyingGlassCircleIcon className="h-5 w-5 text-white" />
+                <p className="text-white pl-3 items-center">
+                  Prospecting
+                </p>
+              </div>
+              <div className="flex bg-black pt-3 pl-3 items-center">
+                <Cog6ToothIcon className="h-5 w-5 text-white" />
+                <p className="text-white pl-3 items-center">
+                  Settings
+                </p>
+              </div>
+              <div className="flex bg-black pt-3 pl-3 items-center">
+                <XCircleIcon className="h-5 w-5 text-white" />
+                <p className="text-white pl-3 items-center">
+                  Logout
+                </p>
+              </div>
             </div>
           </div>
           <div className="w-full">{children}</div>

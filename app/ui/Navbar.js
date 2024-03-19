@@ -14,7 +14,7 @@ export default function Navbar({ url, button = false }) {
                     <div className="w-full flex flex-row-reverse pr-6">
                         <button
                             type="button"
-                            className=" border-2 border-black rounded-md bg-indigo-600 px-8 py-4 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                            className="border-2 border-black rounded-md bg-indigo-600 px-8 py-4 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                         >
                             {button.title}
                         </button>
