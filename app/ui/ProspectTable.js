@@ -1,3 +1,4 @@
+import Link from 'next/link';
 
 export default function ProspectTable() {
     return (
@@ -26,12 +27,13 @@ export default function ProspectTable() {
                                 2/19/24
                             </td>
                             <td className="px-6 py-4">
-                                <button
+                                <Link
                                     type="button"
+                                    href="/prospecting/aproov/view"
                                     className="rounded-md bg-indigo-50 px-3.5 py-2.5 text-sm font-semibold text-indigo-600 shadow-sm hover:bg-indigo-100"
                                 >
                                     Results
-                                </button>
+                                </Link>
                             </td>
                         </tr>
                         <tr className="border rounded-lg">
@@ -42,12 +44,13 @@ export default function ProspectTable() {
                                 2/21/24
                             </td>
                             <td className="px-6 py-4">
-                                <button
+                                <Link
                                     type="button"
+                                    href="/prospecting/aproov/view"
                                     className="rounded-md bg-indigo-50 px-3.5 py-2.5 text-sm font-semibold text-indigo-600 shadow-sm hover:bg-indigo-100"
                                 >
                                     Results
-                                </button>
+                                </Link>
                             </td>
                         </tr>
                         <tr className="border rounded-lg">
@@ -58,12 +61,13 @@ export default function ProspectTable() {
                                 2/23/24
                             </td>
                             <td className="px-6 py-4">
-                                <button
+                                <Link
                                     type="button"
+                                    href="/prospecting/aproov/view"
                                     className="rounded-md bg-indigo-50 px-3.5 py-2.5 text-sm font-semibold text-indigo-600 shadow-sm hover:bg-indigo-100"
                                 >
                                     Results
-                                </button>
+                                </Link>
                             </td>
                         </tr>
 

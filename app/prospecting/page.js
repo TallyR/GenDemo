@@ -23,12 +23,13 @@ export default function Prospecting() {
                         <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
                     </div>
                     <div className="flex flex-row-reverse pr-16 pl-20">
-                        <button
+                        <Link
                             type="button"
+                            href="/prospecting/newsearch"
                             className="whitespace-nowrap border-2 border-black rounded-lg bg-indigo-600 px-4 py-4 text-sm text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                         >
                             New Search
-                        </button>
+                        </Link>
                     </div>
                 </div>
                 <div className="pr-2">

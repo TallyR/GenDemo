@@ -1,3 +1,5 @@
+'use client';
+
 import Image from "next/image";
 import Link from 'next/link';
 import { libre_caslon_display_bold } from '@/app/ui/fonts';
@@ -12,12 +14,15 @@ export default function Navbar({ url, button = false }) {
                 {
                     button &&
                     <div className="w-full flex flex-row-reverse pr-6">
-                        <button
+                        <a
                             type="button"
-                            className="border-2 w-40 border-black rounded-md bg-indigo-600 px-8 py-4 text-sm text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                            href="/export_aproov.csv"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="flex justify-center border-2 w-40 border-black rounded-md bg-indigo-600 px-8 py-4 text-sm text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                         >
                             {button.title}
-                        </button>
+                        </a>
                     </div>
                 }
             </div>

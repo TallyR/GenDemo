@@ -1,7 +1,12 @@
+'use client';
+
 import Navbar from "@/app/ui/Navbar";
 import Toggle from "@/app/ui/Toggle";
 
-export default function NewSearch() {
+import { useState } from 'react';
+
+
+export default async function NewSearch() {
     return (
         <div className="min-w-full">
             <Navbar url="Prospecting / New Search" />
@@ -81,6 +86,7 @@ export default function NewSearch() {
                             <button
                                 type="button"
                                 className="rounded-md bg-indigo-600 px-16 py-5 text-sm border border-black text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                onClick={async (e) => await new Promise((resolve) => setTimeout(resolve, 3000))}
                             >
                                 Search
                             </button>
