@@ -20,13 +20,13 @@ export default function RootLayout({ children }) {
       <body>
         <div className="flex">
           <div>
-            <div className="h-40 w-48 bg-black flex items-center border-b-4 border-b-white padding-left-2">
+            <div className="h-40 w-48 bg-black flex items-center border-b-4 border-b-white padding-left-2 shadow-lg">
 
               <p className={`text-white text-3xl pl-8 ${libre_caslon_display_thin.className}`}>
                 Tally.ai
               </p>
             </div>
-            <div className="absolute top-40 bottom-0 w-48 bg-black flex-col items-start">
+            <div className="absolute top-40 bottom-0 w-48 bg-black flex-col items-start shadow-lg">
 
               <div className="bg-black pt-8 flex">
                 {
