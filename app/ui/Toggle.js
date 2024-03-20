@@ -3,22 +3,27 @@
 import { useState } from 'react'
 import { Switch } from '@headlessui/react'
 import Image from 'next/image';
+import clsx from 'clsx'
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
-export default function Toggle({ image_url }) {
-    const [enabled, setEnabled] = useState(false)
+export default function Toggle({ image_url, settings }) {
+    const [enabled, setEnabled] = useState(settings)
 
     return (
         <div>
             <Switch.Group as="div" className="flex items-center">
                 <Image
                     src={image_url}
-                    width={100}
-                    height={70}
-                    className="mr-8"
+                    width={settings? 125: 100}
+                    height={settings? 80: 70}
+                    className={clsx("mr-8",
+                        {
+                            'mr-32': settings
+                        },
+                    )}
                     alt="Screenshots of the dashboard project showing desktop version"
                 />
                 <Switch
