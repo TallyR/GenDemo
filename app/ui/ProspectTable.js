@@ -70,7 +70,6 @@ export default function ProspectTable() {
                                 </Link>
                             </td>
                         </tr>
-
                     </tbody>
                 </table>
             </div>
