@@ -43,10 +43,12 @@ async function convertCsvBufferToJson(csvBuffer) {
 
     // Use csvtojson to convert the string to JSON
     try {
-
         const jsonObj = await csv().fromString(csvString);
-        const processData = jsonObj.map((e) => {
-            return { email: e.email, linkedin: e.linkedin }
+        const filterBadData = jsonObj.filter((e) => {
+            return e.Email && e['Person Linkedin Url']
+        })
+        const processData = filterBadData.map((e) => {
+            return { email: e.Email, linkedin: e['Person Linkedin Url'] }
         })
         return processData; // This is an array of objects
 
@@ -57,19 +59,19 @@ async function convertCsvBufferToJson(csvBuffer) {
 }
 
 export async function processFile(prevState, formData) {
-    console.log(formData)
+    //reset form
+    if(formData.type && formData.type === 'RESET') {
+        return formData.payload;
+    }
+
+    //new file uploaded
     const file = formData.get("file");
     var retObj = { parsedArray: null, error: null }
-    console.log(file)
-    console.log(file.name);
-    console.log(file.size);
-    const fs = require('fs');
     try {
         retObj.parsedArray = await convertCsvBufferToJson(Buffer.from(await file.arrayBuffer()));
     } catch(error) {
         retObj.error = "Failed to parse"
     }
 
-    console.log(retObj)
     return retObj;
 }
