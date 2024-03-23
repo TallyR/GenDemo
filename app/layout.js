@@ -7,6 +7,7 @@ import { libre_caslon_display_thin } from '@/app/ui/fonts';
 import { HomeIcon } from '@heroicons/react/24/solid'
 import { MagnifyingGlassCircleIcon } from '@heroicons/react/24/solid'
 import { Cog6ToothIcon } from '@heroicons/react/24/solid'
+import { BoltIcon } from '@heroicons/react/24/solid'
 import { XCircleIcon } from '@heroicons/react/24/solid'
 import { LinkIcon } from '@heroicons/react/24/solid'
 import { useState } from 'react'
@@ -118,6 +119,24 @@ export default function RootLayout({ children }) {
                     onClick={(e) => setSelect(4)}
                   >
                     Link Account
+                  </Link>
+                </div>
+              </div>
+
+
+              <div className="bg-black mt-3 flex">
+                {
+                  (selected == 5) ?
+                    <div className="bg-purple-700 h-6 w-1"></div> : <div className="bg-black h-6 w-1"></div>
+                }
+                <div className="flex bg-black absolute left-3 items-center">
+                  <BoltIcon className="h-5 w-5 text-white" />
+                  <Link
+                    href="/newmailmerge"
+                    className="text-white pl-3 items-center"
+                    onClick={(e) => setSelect(5)}
+                  >
+                    AI Mail Merge
                   </Link>
                 </div>
               </div>

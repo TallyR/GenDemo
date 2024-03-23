@@ -13,19 +13,22 @@ import { checkIfEmailConnected } from '@/app/lib/actions'
 export default async function LinkAccountMenu({ connected, emailAddress }) {
 
     //for loading screen
-    const [buttonText, setButtonText] = useState('Link Account')
+    const [buttonText, setButtonText] = useState('Connect')
 
     if (!connected) {
         return (
-            <div className="mt-8 ml-8 w-[450px] h-[300px] shadow-2xl rounded-lg border-2 border-black">
-                <p className="m-4 font-semibold">Link Email Account</p>
-                <div className="w-full pt-8 justify-center items-center">
-                    <div className="flex justify-center items-center">
+            <div className="mt-8 ml-8 shadow-2xl rounded-lg border-2 auto border-black inline-flex flex-col items-center">
+                <div className="m-2">
+                    <p className="font-semibold">Link Email Account</p>
+                </div>
+                <div className="flex justify-center items-center">
+                    <div className="m-2">
                         <button
                             type="button"
-                            className="flex justify-center border-2 w-40 border-black rounded-md bg-indigo-600 px-8 py-4 text-sm text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                            className="border-2 w-40 border-black rounded-md bg-indigo-600 px-8 py-4 text-sm text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                             onClick={
                                 async (e) => {
+                                    e.preventDefault();
                                     setButtonText('Loading...')
                                     await getNewHostedAuthLink()
                                 }
@@ -39,7 +42,7 @@ export default async function LinkAccountMenu({ connected, emailAddress }) {
         )
     } else {
         return (
-            <div className="mt-8 ml-8 w-[450px] h-[200px] shadow-2xl rounded-lg border-2 border-black">
+            <div className="mt-8 ml-8 w-[450px] h-[200px] shadow-2xl rounded-lg border-2 border-black mb-20">
                 <p className="m-4 font-semibold">Linked Account</p>
                 <div className="pt-8">
                     <div className="flex ml-4">

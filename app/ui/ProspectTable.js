@@ -2,9 +2,9 @@ import Link from 'next/link';
 
 export default function ProspectTable() {
     return (
-        <div className="min-w-full h-[500px] border-2 border-black-500/75 shadow-2xl rounded-lg ">
+        <div className="min-w-full h-[500px] border-black-500/75 shadow-2xl rounded-lg border-2 border-black">
             <div className="relative overflow-x-auto">
-                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-black">
+                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-black ">
                     <thead className="text-xs text-gray-700  dark:text-gray-400">
                         <tr>
                             <th scope="col" className="px-6 py-3 text-black">

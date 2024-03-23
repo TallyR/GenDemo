@@ -10,7 +10,7 @@ export default function Prospecting() {
     return (
         <div className="min-w-full">
             <Navbar url="Prospecting" />
-            <div>
+            <div className="mb-20">
                 <div className="pl-16 pt-8 pr-2 flex">
                     <div className="relative flex flex-1 flex-shrink-0">
                         <label htmlFor="search" className="sr-only">
@@ -26,7 +26,7 @@ export default function Prospecting() {
                         <Link
                             type="button"
                             href="/prospecting/newsearch"
-                            className="whitespace-nowrap border-2 border-black rounded-lg bg-indigo-600 px-4 py-4 text-sm text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                            className="whitespace-nowrap rounded-lg bg-indigo-600 px-4 py-4 text-sm text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                         >
                             New Search
                         </Link>
