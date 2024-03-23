@@ -30,7 +30,7 @@ export async function checkIfEmailConnected() {
     } else {
         return {
             connected: false,
-            emailAccount: "does not matter"
+            emailAccount: "does_not_matter"
         }
     }
 }
@@ -59,15 +59,15 @@ async function convertCsvBufferToJson(csvBuffer) {
 export async function processFile(prevState, formData) {
     console.log(formData)
     const file = formData.get("file");
-    var retObj = { parsedArray: null, errors: {} }
+    var retObj = { parsedArray: null, error: null }
     console.log(file)
     console.log(file.name);
     console.log(file.size);
     const fs = require('fs');
     try {
         retObj.parsedArray = await convertCsvBufferToJson(Buffer.from(await file.arrayBuffer()));
-    } catch {
-        //error handling
+    } catch(error) {
+        retObj.error = "Failed to parse"
     }
 
     console.log(retObj)

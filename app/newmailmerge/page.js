@@ -1,12 +1,12 @@
 'use client'
 
-
 import Navbar from "@/app/ui/Navbar";
 import { processFile } from '@/app/lib/actions'
 import { useFormState } from 'react-dom';
+import TableView from '@/app/ui/TableView'
 
-export default async function Newsequence() {
-    const initialState = { parsedArray: null, errors: {} };
+export default async function NewMailMerge() {
+    const initialState = { parsedArray: null, error: null };
     const [state, dispatch] = useFormState(processFile, initialState);
 
     if (state.parsedArray === null) {
@@ -29,11 +29,11 @@ export default async function Newsequence() {
         )
     } else {
         // a table to show the user parsed data -> then can submit the job to the back-end (fill out job name and stuff)
+        // needs to have a back button to reset state and reupload file
         return (
             <div className="min-w-full">
                 <Navbar url="New Mail Merge" />
-                <p>{state.parsedArray[0].email}</p>
-                <p>{state.parsedArray[0].linkedin}</p>
+                <div className="m-2"><TableView Linkedinandemails={state.parsedArray}></TableView></div>
             </div>
         );
     }

@@ -39,7 +39,7 @@ export default async function LinkAccountMenu({ connected, emailAddress }) {
         )
     } else {
         return (
-            <div className="mt-8 ml-8 w-[450px] h-[300px] shadow-2xl rounded-lg border-2 border-black">
+            <div className="mt-8 ml-8 w-[450px] h-[200px] shadow-2xl rounded-lg border-2 border-black">
                 <p className="m-4 font-semibold">Linked Account</p>
                 <div className="pt-8">
                     <div className="flex ml-4">
