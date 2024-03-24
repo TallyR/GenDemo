@@ -6,6 +6,29 @@ import { unstable_noStore as noStore } from 'next/cache';
 import { MongoClient } from 'mongodb'
 import { auth } from "@clerk/nextjs";
 
+export async function grabUserJobs() {
+    noStore(); 
+    const { userId } = auth(); 
+    const client = new MongoClient(process.env.MONGO_DB_CONNECTION_STRING, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    });
+
+    try {
+        await client.connect();
+        const database = await client.db('users');
+        const userCollection = await database.collection('userData'); 
+        const query = { userId: userId }; 
+        var foundUser = await userCollection.findOne(query);
+        if(foundUser === null) {
+            return null; //no jobs or user created yet
+        }
+        return foundUser.jobs;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 export async function testWrite(jobData) {
     noStore();
     const { userId } = auth();
