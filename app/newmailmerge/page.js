@@ -36,7 +36,7 @@ export default function NewMailMerge() {
                     <p className="m-4 font-semibold">Upload CSV File</p>
                     <div className="w-full pt-4 justify-center items-center">
                         <form action={dispatch} key="unique">
-                            <input type="file" name="file" className="mb-3 ml-4" id="file" />
+                            <input type="file" name="file" className="mb-3 ml-4" id="file" onChange={(e) => console.log(e)} />
                             <button type="submit" className="ml-4 flex justify-center w-40 rounded-md bg-indigo-600 px-2 py-1 text-sm text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" id="upload">Submit</button>
                         </form>
                     </div>

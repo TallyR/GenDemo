@@ -5,7 +5,7 @@ import "./globals.css";
 import { libre_caslon_display } from '@/app/ui/fonts';
 import { libre_caslon_display_thin } from '@/app/ui/fonts';
 import { HomeIcon } from '@heroicons/react/24/solid'
-import { MagnifyingGlassCircleIcon } from '@heroicons/react/24/solid'
+import { EnvelopeIcon } from '@heroicons/react/24/solid'
 import { Cog6ToothIcon } from '@heroicons/react/24/solid'
 import { BoltIcon } from '@heroicons/react/24/solid'
 import { XCircleIcon } from '@heroicons/react/24/solid'
@@ -66,13 +66,13 @@ export default function RootLayout({ children }) {
                       <div className="bg-purple-700 h-6 w-1"></div> : <div className="bg-black h-6 w-1"></div>
                   }
                   <div className="flex bg-black absolute left-3 items-center">
-                    <MagnifyingGlassCircleIcon className="h-5 w-5 text-white" />
+                    <EnvelopeIcon className="h-5 w-5 text-white" />
                     <Link
                       href="/prospecting"
                       className="text-white pl-3 items-center"
                       onClick={(e) => setSelect(1)}
                     >
-                      Prospecting
+                      Email Jobs
                     </Link>
                   </div>
                 </div>
@@ -89,7 +89,7 @@ export default function RootLayout({ children }) {
                       className="text-white pl-3 items-center"
                       onClick={(e) => setSelect(2)}
                     >
-                      Settings
+                      AI Prompt
                     </Link>
                   </div>
                 </div>
