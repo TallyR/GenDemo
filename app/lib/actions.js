@@ -3,6 +3,67 @@
 import { UnipileClient } from 'unipile-node-sdk';
 import { redirect } from 'next/navigation';
 import { unstable_noStore as noStore } from 'next/cache';
+import { MongoClient } from 'mongodb'
+import { auth } from "@clerk/nextjs";
+
+export async function testWrite(jobData) {
+    noStore();
+    const { userId } = auth();
+    
+    const client = new MongoClient(process.env.MONGO_DB_CONNECTION_STRING, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    });
+
+    try {
+        await client.connect();
+        const database = await client.db('users');
+        const userCollection = await database.collection('userData');
+        const jobCollection = await database.collection('jobsQueue');
+        const query = { userId: userId }; 
+        var foundUserOrNeedToCreateOne = await userCollection.findOne(query);
+
+        //check if user exist, does not create one
+        if(foundUserOrNeedToCreateOne === null) {
+            //need to add an entry in the database
+            const newUserDoc = {
+                userId: userId,
+                jobs: []
+            }
+            foundUserOrNeedToCreateOne = await userCollection.insertOne(newUserDoc);
+            console.log(`a new user document was inserted with the _id: ${foundUserOrNeedToCreateOne.insertedId}`);
+            foundUserOrNeedToCreateOne = await userCollection.findOne(query);
+        } else {
+            console.log("FOUND USER IN DATABASE!");
+        }
+
+        //update the jobs array with new array data
+        var newJobsArray = foundUserOrNeedToCreateOne.jobs; 
+        newJobsArray.push(jobData)
+        const updateDoc = {
+            $set: {
+                jobs: newJobsArray
+            },
+        }
+        const updatedUser = await userCollection.updateOne(query, updateDoc);
+
+        //place it on jobs queue collection to be processed by server
+        const jobQueueEntry = {
+            jobData: jobData.jobDataArray,
+            jobName: jobData.jobTitle,
+            userId: foundUserOrNeedToCreateOne.userId
+        }
+        await jobCollection.insertOne(jobQueueEntry)
+
+        //close connection
+        await client.close();
+    } catch(error) {
+        console.log(error)
+    }
+    
+    // redirect to prospecting page
+    redirect('/prospecting')
+}
 
 export async function getNewHostedAuthLink() {
     noStore();
@@ -60,7 +121,7 @@ async function convertCsvBufferToJson(csvBuffer) {
 
 export async function processFile(prevState, formData) {
     //reset form
-    if(formData.type && formData.type === 'RESET') {
+    if (formData.type && formData.type === 'RESET') {
         return formData.payload;
     }
 
@@ -69,7 +130,7 @@ export async function processFile(prevState, formData) {
     var retObj = { parsedArray: null, error: null }
     try {
         retObj.parsedArray = await convertCsvBufferToJson(Buffer.from(await file.arrayBuffer()));
-    } catch(error) {
+    } catch (error) {
         retObj.error = "Failed to parse"
     }
 
