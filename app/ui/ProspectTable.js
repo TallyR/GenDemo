@@ -91,14 +91,5 @@ export default function ProspectTable({ jsxEntries }) {
                 </div>
             </div>
         </div>
-
-
-
-
-
-
-
-
-
     );
 }
