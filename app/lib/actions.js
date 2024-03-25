@@ -7,8 +7,8 @@ import { MongoClient } from 'mongodb'
 import { auth } from "@clerk/nextjs";
 
 export async function grabUserJobs() {
-    noStore(); 
-    const { userId } = auth(); 
+    noStore();
+    const { userId } = auth();
     const client = new MongoClient(process.env.MONGO_DB_CONNECTION_STRING, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
@@ -17,11 +17,11 @@ export async function grabUserJobs() {
     try {
         await client.connect();
         const database = await client.db('users');
-        const userCollection = await database.collection('userData'); 
-        const query = { userId: userId }; 
+        const userCollection = await database.collection('userData');
+        const query = { userId: userId };
         var foundUser = await userCollection.findOne(query);
-        if(foundUser === null) {
-            return null; //no jobs or user created yet
+        if (foundUser === null) {
+            return []; // no jobs or user created yet
         }
         return foundUser.jobs;
     } catch (error) {
@@ -32,7 +32,7 @@ export async function grabUserJobs() {
 export async function testWrite(jobData) {
     noStore();
     const { userId } = auth();
-    
+
     const client = new MongoClient(process.env.MONGO_DB_CONNECTION_STRING, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
@@ -43,11 +43,11 @@ export async function testWrite(jobData) {
         const database = await client.db('users');
         const userCollection = await database.collection('userData');
         const jobCollection = await database.collection('jobsQueue');
-        const query = { userId: userId }; 
+        const query = { userId: userId };
         var foundUserOrNeedToCreateOne = await userCollection.findOne(query);
 
         //check if user exist, does not create one
-        if(foundUserOrNeedToCreateOne === null) {
+        if (foundUserOrNeedToCreateOne === null) {
             //need to add an entry in the database
             const newUserDoc = {
                 userId: userId,
@@ -61,7 +61,7 @@ export async function testWrite(jobData) {
         }
 
         //update the jobs array with new array data
-        var newJobsArray = foundUserOrNeedToCreateOne.jobs; 
+        var newJobsArray = foundUserOrNeedToCreateOne.jobs;
         newJobsArray.push(jobData)
         const updateDoc = {
             $set: {
@@ -80,10 +80,10 @@ export async function testWrite(jobData) {
 
         //close connection
         await client.close();
-    } catch(error) {
+    } catch (error) {
         console.log(error)
     }
-    
+
     // redirect to prospecting page
     redirect('/prospecting')
 }
@@ -91,12 +91,15 @@ export async function testWrite(jobData) {
 export async function getNewHostedAuthLink() {
     noStore();
     const client = new UnipileClient(process.env.UNI_URI, process.env.UNI_API_KEY)
+    const { userId } = auth();
     const response = await client.account.createHostedAuthLink({
         type: "create",
         api_url: process.env.UNI_URI,
         expiresOn: "2024-12-22T12:00:00.701Z",
         providers: ["GOOGLE"],
-        success_redirect_url: "http://localhost:3000/linkaccount"
+        success_redirect_url: "https://57b4-2603-7000-4f3c-98fa-18c9-5a13-3b5f-8c8a.ngrok-free.app/linkaccount",
+        notify_url: "https://57b4-2603-7000-4f3c-98fa-18c9-5a13-3b5f-8c8a.ngrok-free.app/api/",
+        name: userId
     })
 
     redirect(response.url)
@@ -104,20 +107,65 @@ export async function getNewHostedAuthLink() {
 
 export async function checkIfEmailConnected() {
     noStore();
-    const client = new UnipileClient(process.env.UNI_URI, process.env.UNI_API_KEY)
-    const response = await client.account.getAll()
-    if (response.items.length > 0) {
-        return {
-            connected: true,
-            emailAccount: response.items[0].name
+
+    const unipileClient = new UnipileClient(process.env.UNI_URI, process.env.UNI_API_KEY)
+    const { userId } = auth();
+    const mongodbClient = new MongoClient(process.env.MONGO_DB_CONNECTION_STRING, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    });
+
+    try {
+        await mongodbClient.connect();
+        const database = await mongodbClient.db('users');
+        const userCollection = await database.collection('userData');
+        const query = { userId: userId };
+        var foundUser = await userCollection.findOne(query);
+        await mongodbClient.close(); //close connection
+
+        // check if user doesn't exist, or no unipile account connected
+        if (foundUser === null || foundUser.unipileAccountId === null) {
+            return ({
+                connected: false,
+                emailAccount: "does_not_matter"
+            })
+        } else {
+            console.log("FOUND USER IN DATABASE!");
         }
-    } else {
-        return {
-            connected: false,
-            emailAccount: "does_not_matter"
-        }
+
+        // grab email address
+        const unipileResults = await unipileClient.account.getAll(foundUser.unipileAccountId)
+        //console.log('Unipile results: ')
+        //console.log(unipileResults);
+        //console.log(foundUser.unipileAccountId);
+
+        /*
+            Unipile's API is very weird, any request to grab a specific account with and ID will result in 
+                every account under the unipile account being returned?
+        */
+
+        const actualUserObject = unipileResults.items.find(trav => {
+            return trav.id === foundUser.unipileAccountId
+        })
+        return ({
+            connected: true, 
+            emailAccount: actualUserObject.name
+        })
+    } catch (error) {
+        console.log(error)
+        return ({
+            connected: false, 
+            emailAccount: 'error'
+        })
     }
 }
+
+/*
+    user connects email:
+        db -> userId => unipileAccountId (that will be used to make requests)
+    when checking if user connected:
+        -> db + userId => is unipileAccountId
+*/
 
 // used for parsing file buffer to json
 async function convertCsvBufferToJson(csvBuffer) {

@@ -9,6 +9,9 @@ export default authMiddleware({
   // Prevent the specified routes from accessing
   // authentication information:
   // ignoredRoutes: ['/no-auth-in-this-route'],
+  ignoredRoutes: ["/api"],
+  publicRoutes: ["/api"] // allow for unipile to send the userId back
+
 });
  
 export const config = {

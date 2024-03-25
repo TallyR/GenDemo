@@ -51,6 +51,7 @@ export default async function Prospecting() {
 
     console.log(processedJobs);
 
+    //should probably move this to ProspectTable.js
     const jsxEntries = processedJobs.map(trav => {
         return (
             <tr className="border rounded-lg" key={trav.jobKey}>
