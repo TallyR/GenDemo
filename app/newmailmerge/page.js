@@ -8,12 +8,38 @@ import TableView from '@/app/ui/TableView';
 import { useState } from 'react';
 import { testWrite } from '@/app/lib/actions';
 import clsx from 'clsx';
+import ErrorModal from "@/app/ui/ErrorModal";
+import { useEffect } from 'react';
 
 export default function NewMailMerge() {
     const initialState = { parsedArray: null, error: null };
     const [state, dispatch] = useFormState(processFile, initialState);
     const [jobTitle, setTitleState] = useState('')
     const [submitting, setSubmit] = useState(false)
+
+
+
+    //error modal handling
+    const [showErrorModal, setErrorModal] = useState(false)
+    const [errorTitle, setErrorTitle] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+    useEffect(() => {
+        if (state.error === 'no_email_connected') {
+            setErrorTitle('No email linked')
+            setErrorMessage("Please go to the 'Link Account Tab' and connect your email account")
+            setErrorModal(true)
+        } else if (state.error === 'no_file_upload') {
+            console.log('no file upload!!!!!')
+            setErrorTitle('No file')
+            setErrorMessage("Please upload a .csv file")
+            setErrorModal(true)
+        } else if(state.error === 'not_csv_or_no_columns') {
+            console.log('bad file upload!!!!!')
+            setErrorTitle('Bad File')
+            setErrorMessage("Needs a .csv file that has columns named 'Emails' and 'Person Linkedin Url'")
+            setErrorModal(true)
+        }
+    }, [state]);
 
     // Function to reset the state
     const handleReset = (e) => {
@@ -30,11 +56,9 @@ export default function NewMailMerge() {
 
     if (state.parsedArray === null) {
         return (
-
-            //dialog should be here
-            
             <div className="min-w-full">
                 <Navbar url="New AI Mail Merge" />
+                <ErrorModal onExit={setErrorModal} showSelf={showErrorModal} errorTitle={errorTitle} errorMessage={errorMessage} />
                 <div className="mt-8 ml-8 w-[400px] h-[200px] shadow-2xl rounded-lg border-2 border-black mb-20">
                     <p className="m-4 font-semibold">Upload CSV File</p>
                     <div className="w-full pt-4 justify-center items-center">
@@ -77,7 +101,7 @@ export default function NewMailMerge() {
 
                             <button
                                 onClick={submitToDatabase}
-                                disabled={ jobTitle === '' || submitting }
+                                disabled={jobTitle === '' || submitting}
                                 className={clsx(
                                     (jobTitle !== '') ? 'rounded-md px-16 py-5 text-sm border border-black text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 bg-indigo-600 hover:bg-indigo-500' : 'rounded-md px-16 py-5 text-sm border border-black text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 bg-gray-500'
                                 )}

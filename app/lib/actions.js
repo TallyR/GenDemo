@@ -125,7 +125,8 @@ export async function checkIfEmailConnected() {
         await mongodbClient.close(); //close connection
 
         // check if user doesn't exist, or no unipile account connected
-        if (foundUser === null || foundUser.unipileAccountId === null) {
+        console.log('checking account id')
+        if (foundUser === null || !foundUser.unipileAccountId) {
             return ({
                 connected: false,
                 emailAccount: "does_not_matter"
@@ -192,19 +193,40 @@ async function convertCsvBufferToJson(csvBuffer) {
 }
 
 export async function processFile(prevState, formData) {
+    noStore();
+    var retObj = { parsedArray: null, error: null }
+
     //reset form
     if (formData.type && formData.type === 'RESET') {
         return formData.payload;
     }
 
+    //check if file is not upload
+    if(formData.get("file").name === 'undefined') {
+        console.log('no file uploaded')
+        retObj.error = 'no_file_upload'
+        return retObj
+    }
+
+    //check if email is connected
+    var checkEmailConnected = await checkIfEmailConnected()
+    if(!checkEmailConnected.connected) {
+        console.log('email not connected')
+        retObj.error = 'no_email_connected'
+        return retObj
+    }
+
     //new file uploaded
     const file = formData.get("file");
-    var retObj = { parsedArray: null, error: null }
     try {
-        retObj.parsedArray = await convertCsvBufferToJson(Buffer.from(await file.arrayBuffer()));
+         const file_parsed = await convertCsvBufferToJson(Buffer.from(await file.arrayBuffer()));
+         if(file_parsed.length === 0) {
+            retObj.error = "not_csv_or_no_columns"
+            return retObj
+         }
+         retObj.parsedArray = file_parsed
     } catch (error) {
         retObj.error = "Failed to parse"
     }
-
     return retObj;
 }
