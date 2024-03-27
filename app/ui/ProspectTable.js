@@ -67,7 +67,7 @@ export default function ProspectTable({ jsxEntries }) {
             </div>
             <div className="pr-2">
                 <div className="pl-16 pt-8 pr-16">
-                    <div className="min-w-full max-h-96 border-black-500/75 shadow-m rounded-lg border-2 border-black overflow-y-scroll">
+                    <div className="min-w-full max-h-80 border-black-500/75 shadow-m rounded-lg border-2 border-black overflow-y-scroll">
                         <div className="relative overflow-x-auto">
                             <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-black ">
                                 <thead className="text-xs text-gray-700  dark:text-gray-400">

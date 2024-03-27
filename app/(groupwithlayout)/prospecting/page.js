@@ -61,13 +61,13 @@ export default async function Prospecting() {
     const jsxEntries = processedJobs.map(trav => {
         return (
             <tr className="border rounded-lg" key={trav.jobKey}>
-                <th scope="row" className="px-6 py-4 font-medium">
+                <th scope="row" className="px-5 py-2 font-medium">
                     {trav.jobTitle}
                 </th>
-                <td className="px-6 py-4">
+                <td className="px-5 py-2">
                     {trav.jobDate}
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-6 py-2">
                     <button
                         type="button"
                         href="/prospecting/aproov/view"
