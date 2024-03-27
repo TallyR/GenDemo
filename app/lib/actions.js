@@ -98,8 +98,8 @@ export async function getNewHostedAuthLink() {
         api_url: process.env.UNI_URI,
         expiresOn: "2024-12-22T12:00:00.701Z",
         providers: ["GOOGLE"],
-        success_redirect_url: "https://57b4-2603-7000-4f3c-98fa-18c9-5a13-3b5f-8c8a.ngrok-free.app/linkaccount",
-        notify_url: "https://57b4-2603-7000-4f3c-98fa-18c9-5a13-3b5f-8c8a.ngrok-free.app/api/",
+        success_redirect_url: "tallyai.app/linkaccount",
+        notify_url: "tallyai.app/api/",
         name: userId
     })
 
