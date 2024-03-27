@@ -15,7 +15,9 @@ export default function NewMailMerge() {
     const initialState = { parsedArray: null, error: null };
     const [state, dispatch] = useFormState(processFile, initialState);
     const [jobTitle, setTitleState] = useState('')
-    const [submitting, setSubmit] = useState(false)
+    const [submitting, setSubmit] = useState(false);
+
+    const [buttonMessage, setButtonMessage] = useState('Submit')
 
     //error modal handling
     const [showErrorModal, setErrorModal] = useState(false)
@@ -26,16 +28,19 @@ export default function NewMailMerge() {
             setErrorTitle('No email linked')
             setErrorMessage("Please go to the 'Link Account Tab' and connect your email account")
             setErrorModal(true)
+            setButtonMessage('Submit')
         } else if (state.error === 'no_file_upload') {
             console.log('no file upload!!!!!')
             setErrorTitle('No file')
             setErrorMessage("Please upload a .csv file")
             setErrorModal(true)
-        } else if(state.error === 'not_csv_or_no_columns') {
+            setButtonMessage('Submit')
+        } else if (state.error === 'not_csv_or_no_columns') {
             console.log('bad file upload!!!!!')
             setErrorTitle('Bad File')
             setErrorMessage("Needs a .csv file that has columns named 'Emails' and 'Person Linkedin Url'")
             setErrorModal(true)
+            setButtonMessage('Submit')
         }
     }, [state]);
 
@@ -43,6 +48,7 @@ export default function NewMailMerge() {
     const handleReset = (e) => {
         e.preventDefault(); // Prevent form submission or any default action
         dispatch({ type: 'RESET', payload: initialState }); // Assuming your processFile reducer can handle a RESET action
+        setButtonMessage('Submit')
     };
 
     // Function to submit job to database for processing, marked as started
@@ -60,9 +66,15 @@ export default function NewMailMerge() {
                 <div className="mt-8 ml-8 w-[400px] h-[200px] shadow-2xl rounded-lg border-2 border-black mb-20">
                     <p className="m-4 font-semibold">Upload CSV File</p>
                     <div className="w-full pt-4 justify-center items-center">
-                        <form action={dispatch} key="unique">
+                        <form action={dispatch} onSubmit={() => {
+                            setButtonMessage('Loading...')
+                        }} key="unique">
                             <input type="file" name="file" className="mb-3 ml-4" id="file" onChange={(e) => console.log(e)} />
-                            <button type="submit" className="ml-4 flex justify-center w-40 rounded-md bg-indigo-600 px-2 py-1 text-sm text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" id="upload">Submit</button>
+                            <button type="submit" disabled={buttonMessage === 'Loading...'} className={clsx(
+                                (buttonMessage !== 'Loading...') ? "ml-4 flex justify-center w-40 rounded-md bg-indigo-600 px-2 py-1 text-sm text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" : "ml-4 flex justify-center w-40 rounded-md bg-gray-600 px-2 py-1 text-sm text-white shadow-sm  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                            )}>
+                                {buttonMessage}
+                            </button>
                         </form>
                     </div>
                 </div>
@@ -100,10 +112,10 @@ export default function NewMailMerge() {
                                 onClick={submitToDatabase}
                                 disabled={jobTitle === '' || submitting}
                                 className={clsx(
-                                    (jobTitle !== '') ? 'rounded-md px-16 py-5 text-sm border border-black text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 bg-indigo-600 hover:bg-indigo-500' : 'rounded-md px-16 py-5 text-sm border border-black text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 bg-gray-500'
+                                    (jobTitle !== '' && !submitting) ? 'rounded-md px-16 py-5 text-sm border border-black text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 bg-indigo-600 hover:bg-indigo-500' : 'rounded-md px-16 py-5 text-sm border border-black text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 bg-gray-500'
                                 )}
                             >
-                                Submit
+                                {submitting ? 'Loading...' : 'Submit'}
                             </button>
 
                             <button

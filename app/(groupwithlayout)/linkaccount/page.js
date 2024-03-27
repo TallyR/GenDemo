@@ -11,7 +11,7 @@ export default async function Home() {
     return (
         <div className="min-w-full">
             <Navbar url="Link Account" />
-            <LinkAccountMenu connected={connected} emailAddress={emailAccount}/>
+            <LinkAccountMenu connected={connected} emailAddress={emailAccount} />
         </div>
     )
 }
