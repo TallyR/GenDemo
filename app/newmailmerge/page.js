@@ -30,6 +30,9 @@ export default function NewMailMerge() {
 
     if (state.parsedArray === null) {
         return (
+
+            //dialog should be here
+            
             <div className="min-w-full">
                 <Navbar url="New AI Mail Merge" />
                 <div className="mt-8 ml-8 w-[400px] h-[200px] shadow-2xl rounded-lg border-2 border-black mb-20">

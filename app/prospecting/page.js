@@ -39,7 +39,12 @@ function extractStringBeforeLastAt(input) {
 export default async function Prospecting() {
     //const [searchTerm, setSearchTerm] = useState('')
     //process job data from the backend
-    const res = await grabUserJobs();
+    var res = await grabUserJobs();
+    console.log(res)
+    if(!res) {
+        res = [] //bad request
+    }
+
     const processedJobs = res.map(trav => {
         return {
             jobTitle: extractStringBeforeLastAt(trav.jobTitle),

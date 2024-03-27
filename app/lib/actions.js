@@ -12,6 +12,7 @@ export async function grabUserJobs() {
     const client = new MongoClient(process.env.MONGO_DB_CONNECTION_STRING, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
+        connectTimeoutMS: 65000, //increased timeout for shakey network conditions
     });
 
     try {

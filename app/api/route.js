@@ -15,7 +15,7 @@ export async function POST(request) {
     const userId = body.name
     const client = new MongoClient(process.env.MONGO_DB_CONNECTION_STRING, {
         useNewUrlParser: true,
-        useUnifiedTopology: true,
+        useUnifiedTopology: true
     });
 
     try {
@@ -57,7 +57,7 @@ export async function POST(request) {
     }
 
     // General Logic
-    
+
     /*
      {
         status: 'CREATION_SUCCESS',
