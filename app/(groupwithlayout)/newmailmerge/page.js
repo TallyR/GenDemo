@@ -107,12 +107,12 @@ export default function NewMailMerge() {
                             Your data
                         </label>
                         <div className="mt-1"><TableView Linkedinandemails={state.parsedArray}></TableView></div>
-                        <div className="mt-8 mb-8 flex grow flex-row-reverse">
+                        <div className="mt-3 mb-3 flex grow flex-row-reverse">
                             <button
                                 onClick={submitToDatabase}
                                 disabled={jobTitle === '' || submitting}
                                 className={clsx(
-                                    (jobTitle !== '' && !submitting) ? 'rounded-md px-16 py-5 text-sm border border-black text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 bg-indigo-600 hover:bg-indigo-500' : 'rounded-md px-16 py-5 text-sm border border-black text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 bg-gray-500'
+                                    (jobTitle !== '' && !submitting) ? 'rounded-md px-16 py-3 text-sm border border-black text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 bg-indigo-600 hover:bg-indigo-500' : 'rounded-md px-16 py-3 text-sm border border-black text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 bg-gray-500'
                                 )}
                             >
                                 {submitting ? 'Loading...' : 'Submit'}
@@ -121,7 +121,7 @@ export default function NewMailMerge() {
                             <button
                                 onClick={handleReset}
                                 href="/newmailmerge"
-                                className="rounded-md  bg-red-500 mr-2 px-16 py-5 text-sm border border-black text-white shadow-sm hover:bg-red-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                className="rounded-md  bg-red-500 mr-2 px-16 py-3 text-sm border border-black text-white shadow-sm hover:bg-red-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                             >
                                 Back
                             </button>

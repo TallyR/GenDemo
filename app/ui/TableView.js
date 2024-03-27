@@ -57,7 +57,7 @@ export default function TableView({ Linkedinandemails }) {
 
     return (
         <div className="border-2 border-black-500/75 rounded-lg">
-            <div className="relative overflow-x-auto overflow-y-scroll max-h-72">
+            <div className="relative overflow-x-auto overflow-y-scroll max-h-48">
                 <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-black max-h-2">
                     <thead className="text-xs text-gray-700  dark:text-gray-400">
                         <tr>

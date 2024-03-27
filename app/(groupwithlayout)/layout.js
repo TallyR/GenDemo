@@ -33,7 +33,7 @@ export default function RootLayout({ children }) {
     <ClerkProvider>
       <html lang="en">
         <body>
-          <div className="flex overflow-hidden max-h-full">
+          <div className="flex overflow-hidden h-screen">
             <div>
               <div className="h-40 w-48 bg-black flex items-center border-b-4 border-b-white padding-left-2 shadow-lg">
                 <p className={`text-white text-3xl pl-8 ${libre_caslon_display_thin.className}`}>

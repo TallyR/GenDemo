@@ -32,13 +32,14 @@ export default function ProspectTable({ jsxEntries }) {
     var filteredJsxEntries = jsxEntries.filter(trav => {
         return isSubset(trav.key, searchTerm)
     })
+
     /*
         This could def live on the server
     */
 
     // const jsxTableEntries = jobData.map(jobData)
     return (
-        <div className="mb-20">
+        <div className="mb-4">
             <div className="pl-16 pt-8 pr-2 flex">
                 <div className="relative flex flex-1 flex-shrink-0">
                     <label htmlFor="search" className="sr-only">
@@ -66,7 +67,7 @@ export default function ProspectTable({ jsxEntries }) {
             </div>
             <div className="pr-2">
                 <div className="pl-16 pt-8 pr-16">
-                    <div className="min-w-full h-[500px] border-black-500/75 shadow-2xl rounded-lg border-2 border-black overflow-y-scroll">
+                    <div className="min-w-full max-h-96 border-black-500/75 shadow-m rounded-lg border-2 border-black overflow-y-scroll">
                         <div className="relative overflow-x-auto">
                             <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-black ">
                                 <thead className="text-xs text-gray-700  dark:text-gray-400">

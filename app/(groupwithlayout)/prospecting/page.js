@@ -44,8 +44,9 @@ export default async function Prospecting() {
     if(!res) {
         res = [] //bad request
     }
+    const reversed = res.reverse()
 
-    const processedJobs = res.map(trav => {
+    const processedJobs = reversed.map(trav => {
         return {
             jobTitle: extractStringBeforeLastAt(trav.jobTitle),
             jobState: trav.status,
