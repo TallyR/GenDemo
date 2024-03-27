@@ -4,6 +4,7 @@ import Navbar from "@/app/ui/Navbar";
 import { getNewHostedAuthLink } from '@/app/lib/actions'
 import { checkIfEmailConnected } from '@/app/lib/actions'
 import LinkAccountMenu from '@/app/ui/LinkAccountMenu';
+import { Suspense } from "react";
 
 export default async function Home() {
     const { connected, emailAccount } = await checkIfEmailConnected(); // will likely change this soon

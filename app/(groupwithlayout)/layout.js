@@ -12,6 +12,7 @@ import Link from 'next/link';
 import { ClerkProvider } from '@clerk/nextjs'
 import { UserButton } from "@clerk/nextjs";
 import { usePathname } from 'next/navigation';
+import { Suspense } from "react";
 
 
 
@@ -105,7 +106,7 @@ export default function RootLayout({ children }) {
                     </Link>
                   </div>
                 </div>
-                  
+
                 <div className="ml-4 mb-4 absolute bottom-0 flex items-center">
                   <UserButton />
                   <p className="pl-2 text-white">Your Profile</p>
