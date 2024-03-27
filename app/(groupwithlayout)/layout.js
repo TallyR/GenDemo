@@ -1,7 +1,7 @@
 'use client';
 
 import { Inter } from "next/font/google";
-import "./globals.css";
+import "@/app/globals.css";
 import { libre_caslon_display_thin } from '@/app/ui/fonts';
 import { HomeIcon } from '@heroicons/react/24/solid'
 import { EnvelopeIcon } from '@heroicons/react/24/solid'
@@ -11,7 +11,6 @@ import { LinkIcon } from '@heroicons/react/24/solid'
 import Link from 'next/link';
 import { ClerkProvider } from '@clerk/nextjs'
 import { UserButton } from "@clerk/nextjs";
-
 import { usePathname } from 'next/navigation';
 
 
@@ -60,13 +59,13 @@ export default function RootLayout({ children }) {
 
                 <div className="bg-black mt-3 flex">
                   {
-                    ('/settings' === pathName) ?
+                    ('/aiprompt' === pathName) ?
                       <div className="bg-purple-700 h-6 w-1"></div> : <div className="bg-black h-6 w-1"></div>
                   }
                   <div className="flex bg-black absolute left-3 items-center">
                     <Cog6ToothIcon className="h-5 w-5 text-white" />
                     <Link
-                      href="/settings"
+                      href="/aiprompt"
                       className="text-white pl-3 items-center"
                     >
                       AI Prompt
