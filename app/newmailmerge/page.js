@@ -17,8 +17,6 @@ export default function NewMailMerge() {
     const [jobTitle, setTitleState] = useState('')
     const [submitting, setSubmit] = useState(false)
 
-
-
     //error modal handling
     const [showErrorModal, setErrorModal] = useState(false)
     const [errorTitle, setErrorTitle] = useState('');
@@ -98,7 +96,6 @@ export default function NewMailMerge() {
                         </label>
                         <div className="mt-1"><TableView Linkedinandemails={state.parsedArray}></TableView></div>
                         <div className="mt-8 mb-8 flex grow flex-row-reverse">
-
                             <button
                                 onClick={submitToDatabase}
                                 disabled={jobTitle === '' || submitting}
