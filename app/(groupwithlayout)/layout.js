@@ -40,13 +40,13 @@ export default function RootLayout({ children }) {
 
                 <div className="bg-black mt-8 flex">
                   {
-                    ('/prospecting' === pathName) ?
+                    ('/' === pathName) ?
                       <div className="bg-purple-700 h-6 w-1"></div> : <div className="bg-black h-6 w-1"></div>
                   }
                   <div className="flex bg-black absolute left-3 items-center">
                     <EnvelopeIcon className="h-5 w-5 text-white" />
                     <Link
-                      href="/prospecting"
+                      href="/"
                       className="text-white pl-3 items-center"
                     >
                       Email Jobs

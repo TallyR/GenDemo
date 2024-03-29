@@ -70,7 +70,6 @@ export default async function Prospecting() {
                 <td className="px-6 py-2">
                     <button
                         type="button"
-                        href="/prospecting/aproov/view"
                         disabled={true}
                         className="rounded-md bg-indigo-50 px-3.5 py-2.5 text-sm font-semibold text-indigo-600 shadow-sm"
                     >

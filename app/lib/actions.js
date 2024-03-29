@@ -86,7 +86,7 @@ export async function testWrite(jobData) {
     }
 
     // redirect to prospecting page
-    redirect('/prospecting')
+    redirect('/')
 }
 
 export async function getNewHostedAuthLink() {
