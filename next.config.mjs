@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    /* Causing a lot of Clerk issues
     async redirects() {
         return [
             {
@@ -9,6 +10,7 @@ const nextConfig = {
             },
         ];
     },
+    */
 };
 
 export default nextConfig;
