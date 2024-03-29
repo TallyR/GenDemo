@@ -26,7 +26,7 @@ export default function NewMailMerge() {
     useEffect(() => {
         if (state.error === 'no_email_connected') {
             setErrorTitle('No email linked')
-            setErrorMessage("Please go to the 'Link Account Tab' and connect your email account")
+            setErrorMessage("Please go to the 'Link Account' tab and connect your email account")
             setErrorModal(true)
             setButtonMessage('Submit')
         } else if (state.error === 'no_file_upload') {
