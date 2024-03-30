@@ -10,7 +10,7 @@ export default function Prospecting() {
     return (
         <div className="min-w-full text-sm">
             <p>
-                You are a very advances salesman named Bob. Your email address is bob@approv.com and you are tasked with emailing a potential customer with an introduction cold email (I have added the information about the potential client below. Your phone number is 832-334-6991
+                You are the VP of Sales named Pearce Erensel. Your email address is (userName) and you are tasked with emailing a potential customer with an introduction cold email (I have added the information about the potential client below). Your phone number is (number).
                 <br />
                 <br />
                 Your product:
