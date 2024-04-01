@@ -26,19 +26,24 @@ export default function NewMailMerge() {
     useEffect(() => {
         if (state.error === 'no_email_connected') {
             setErrorTitle('No email linked')
-            setErrorMessage("Please go to the 'Link Account' tab and connect your email account")
+            setErrorMessage("Please navigate to the 'Link Account' tab and connect your email account before starting a mail merge.")
             setErrorModal(true)
             setButtonMessage('Submit')
         } else if (state.error === 'no_file_upload') {
-            console.log('no file upload!!!!!')
+            //console.log('no file upload!!!!!')
             setErrorTitle('No file')
             setErrorMessage("Please upload a .csv file")
             setErrorModal(true)
             setButtonMessage('Submit')
         } else if (state.error === 'not_csv_or_no_columns') {
-            console.log('bad file upload!!!!!')
+            //console.log('bad file upload!!!!!')
             setErrorTitle('Bad File')
-            setErrorMessage("Needs a .csv file that has columns named 'Emails' and 'Person Linkedin Url'")
+            setErrorMessage("Requires a .csv file with columns titled 'Emails' and 'Person LinkedIn URL'.")
+            setErrorModal(true)
+            setButtonMessage('Submit')
+        } else if(state.error === "too_many_entries") {
+            setErrorTitle('Too large')
+            setErrorMessage("Due to concerns about email reputation safety, email sequences must not exceed 30 entries.")
             setErrorModal(true)
             setButtonMessage('Submit')
         }

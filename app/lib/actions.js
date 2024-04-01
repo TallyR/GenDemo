@@ -220,10 +220,19 @@ export async function processFile(prevState, formData) {
     const file = formData.get("file");
     try {
          const file_parsed = await convertCsvBufferToJson(Buffer.from(await file.arrayBuffer()));
+
+         // no entries
          if(file_parsed.length === 0) {
             retObj.error = "not_csv_or_no_columns"
             return retObj
          }
+
+         // too many entries 
+         if(file_parsed.length > 30) {
+            retObj.error = "too_many_entries"
+            return retObj
+         }
+
          retObj.parsedArray = file_parsed
     } catch (error) {
         retObj.error = "Failed to parse"
