@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { unstable_noStore as noStore } from 'next/cache';
 import { MongoClient } from 'mongodb'
 import { auth } from "@clerk/nextjs";
+import { revalidatePath } from "next/cache";
 
 export async function grabUserJobs() {
     noStore();
@@ -106,6 +107,39 @@ export async function getNewHostedAuthLink() {
     redirect(response.url)
 }
 
+export async function disconnectEmail() {
+    noStore();
+
+    const unipileClient = new UnipileClient(process.env.UNI_URI, process.env.UNI_API_KEY)
+    const { userId } = auth();
+    const mongodbClient = new MongoClient(process.env.MONGO_DB_CONNECTION_STRING, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    });
+
+    try {
+
+        await mongodbClient.connect();
+        const database = await mongodbClient.db('users');
+        const userCollection = await database.collection('userData');
+        const query = { userId: userId };
+        var foundUser = await userCollection.findOne(query);
+        var updatedUser = await userCollection.updateOne(query, {
+            $set: {
+                unipileAccountId: 'NULL'
+            }
+        });
+        await mongodbClient.close(); //close connection
+        const response = await unipileClient.account.delete(foundUser.unipileAccountId)
+        console.log(response)
+
+    } catch (error) {
+        console.log(error)
+    }
+
+    revalidatePath('/linkaccount') //reset the page
+}
+
 export async function checkIfEmailConnected() {
     noStore();
 
@@ -126,7 +160,8 @@ export async function checkIfEmailConnected() {
 
         // check if user doesn't exist, or no unipile account connected
         console.log('checking account id')
-        if (foundUser === null || !foundUser.unipileAccountId) {
+        if (foundUser === null || !foundUser.unipileAccountId || foundUser.unipileAccountId === 'NULL') {
+               console.log("User not found")
             return ({
                 connected: false,
                 emailAccount: "does_not_matter"
@@ -137,9 +172,6 @@ export async function checkIfEmailConnected() {
 
         // grab email address
         const unipileResults = await unipileClient.account.getAll(foundUser.unipileAccountId)
-        //console.log('Unipile results: ')
-        //console.log(unipileResults);
-        //console.log(foundUser.unipileAccountId);
 
         /*
             Unipile's API is very weird, any request to grab a specific account with and ID will result in 
@@ -150,13 +182,13 @@ export async function checkIfEmailConnected() {
             return trav.id === foundUser.unipileAccountId
         })
         return ({
-            connected: true, 
+            connected: true,
             emailAccount: actualUserObject.name
         })
     } catch (error) {
         console.log(error)
         return ({
-            connected: false, 
+            connected: false,
             emailAccount: 'error'
         })
     }
@@ -202,7 +234,7 @@ export async function processFile(prevState, formData) {
     }
 
     //check if file is not upload
-    if(formData.get("file").name === 'undefined') {
+    if (formData.get("file").name === 'undefined') {
         console.log('no file uploaded')
         retObj.error = 'no_file_upload'
         return retObj
@@ -210,7 +242,7 @@ export async function processFile(prevState, formData) {
 
     //check if email is connected
     var checkEmailConnected = await checkIfEmailConnected()
-    if(!checkEmailConnected.connected) {
+    if (!checkEmailConnected.connected) {
         console.log('email not connected')
         retObj.error = 'no_email_connected'
         return retObj
@@ -219,21 +251,21 @@ export async function processFile(prevState, formData) {
     //new file uploaded
     const file = formData.get("file");
     try {
-         const file_parsed = await convertCsvBufferToJson(Buffer.from(await file.arrayBuffer()));
+        const file_parsed = await convertCsvBufferToJson(Buffer.from(await file.arrayBuffer()));
 
-         // no entries
-         if(file_parsed.length === 0) {
+        // no entries
+        if (file_parsed.length === 0) {
             retObj.error = "not_csv_or_no_columns"
             return retObj
-         }
+        }
 
-         // too many entries 
-         if(file_parsed.length > 30) {
+        // too many entries 
+        if (file_parsed.length > 30) {
             retObj.error = "too_many_entries"
             return retObj
-         }
+        }
 
-         retObj.parsedArray = file_parsed
+        retObj.parsedArray = file_parsed
     } catch (error) {
         retObj.error = "Failed to parse"
     }
