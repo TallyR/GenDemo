@@ -38,7 +38,7 @@ export default function NewMailMerge() {
         } else if (state.error === 'not_csv_or_no_columns') {
             //console.log('bad file upload!!!!!')
             setErrorTitle('Bad File')
-            setErrorMessage("Requires a .csv file with columns titled 'Emails' and 'Person LinkedIn URL'.")
+            setErrorMessage("Requires a .csv file with columns titled 'Email' and 'Person Linkedin Url'.")
             setErrorModal(true)
             setButtonMessage('Submit')
         } else if(state.error === "too_many_entries") {
