@@ -260,7 +260,7 @@ export async function processFile(prevState, formData) {
         }
 
         // too many entries 
-        if (file_parsed.length > 30) {
+        if (file_parsed.length > 200) {
             retObj.error = "too_many_entries"
             return retObj
         }

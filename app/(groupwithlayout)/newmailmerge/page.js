@@ -43,7 +43,7 @@ export default function NewMailMerge() {
             setButtonMessage('Submit')
         } else if(state.error === "too_many_entries") {
             setErrorTitle('Too large')
-            setErrorMessage("Due to concerns about email reputation safety, email sequences must not exceed 30 entries.")
+            setErrorMessage("Due to concerns about email reputation safety, email sequences must not exceed 200 entries.")
             setErrorModal(true)
             setButtonMessage('Submit')
         }
