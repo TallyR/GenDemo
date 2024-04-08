@@ -41,7 +41,6 @@ export async function POST(request) {
             }
             const updatedUser = await userCollection.updateOne(query, updateDoc);
             console.log('Already found user, update a success!')
-            console.log(updatedUser);
         }
 
         //can early return at that point

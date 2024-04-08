@@ -6,6 +6,91 @@ import { unstable_noStore as noStore } from 'next/cache';
 import { MongoClient } from 'mongodb'
 import { auth } from "@clerk/nextjs";
 import { revalidatePath } from "next/cache";
+import { google } from 'googleapis';
+
+export async function generateAndSaveGmailCredentials(accessToken) {
+    //THIS CANNOT BE PUSHED TO GIT, NEEDS TO BE IN a .ENV enviornment
+    const oauth2Client = new google.auth.OAuth2(
+        process.env.GOOGLE_CLIENT_ID,
+        process.env.GOOGLE_CLIENT_SECRET,
+        "https://tallyai.app/linkaccount"
+    );
+
+    const info = await oauth2Client.getToken(accessToken)
+    console.log("Refresh token:")
+    console.log(info.tokens.refresh_token)
+
+    //grab the gmail aliases
+    const userGmailAuth = { "type": "authorized_user", "client_id": process.env.GOOGLE_CLIENT_ID, "client_secret": process.env.GOOGLE_CLIENT_SECRET, "refresh_token": info.tokens.refresh_token }
+    const userGmail = await google.auth.fromJSON(userGmailAuth);
+    const gmail = google.gmail({ version: 'v1', auth: userGmail });
+    const aliasesResponse = await gmail.users.settings.sendAs.list({
+        userId: 'me',
+    });
+    const aliases = aliasesResponse.data.sendAs;
+    const profileResponse = await gmail.users.getProfile({
+        userId: 'me',
+    });
+    console.log('Aliases: ');
+    console.log(aliases)
+
+    const { userId } = auth();
+    const client = new MongoClient(process.env.MONGO_DB_CONNECTION_STRING, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+    });
+
+    try {
+        await client.connect();
+        const database = await client.db('users');
+        const userCollection = await database.collection('userData');
+        const query = { userId: userId };
+        var foundUser = await userCollection.findOne(query);
+        if (foundUser === null) {
+            const newUserDoc = {
+                userId: userId,
+                jobs: [],
+                gmailAccessToken: info.tokens.access_token,
+                gmailRefreshToken: info.tokens.refresh_token,
+                gmailAlias: aliases[0].sendAsEmail
+            }
+            foundUser = await userCollection.insertOne(newUserDoc);
+            console.log(`a new user document was inserted with the _id: ${foundUser.insertedId}`);
+        } else {
+            //update the user with the new unipile add
+            const updateDoc = {
+                $set: {
+                    gmailAccessToken: info.tokens.access_token,
+                    gmailRefreshToken: info.tokens.refresh_token,
+                    gmailAlias: aliases[0].sendAsEmail
+                },
+            }
+            const updatedUser = await userCollection.updateOne(query, updateDoc);
+            console.log('Already found user, update a success!')
+        }
+
+    } catch (error) {
+        console.log("Could not save user's gmail tokens");
+        console.log(error);
+    }
+
+    redirect('/linkaccount')
+}
+
+export async function generateGmailAuthRedirect() {
+    //THIS CANNOT BE PUSHED INTO GIHUB
+    const oauth2Client = new google.auth.OAuth2(
+        process.env.GOOGLE_CLIENT_ID,
+        process.env.GOOGLE_CLIENT_SECRET,
+        "https://tallyai.app/linkaccount"
+    );
+    const SCOPES = ['https://www.googleapis.com/auth/gmail.send', 'https://www.googleapis.com/auth/gmail.readonly']
+    const url = await oauth2Client.generateAuthUrl({
+        access_type: 'offline',
+        scope: SCOPES
+    });
+    redirect(url)
+}
 
 export async function grabUserJobs() {
     noStore();
@@ -107,6 +192,60 @@ export async function getNewHostedAuthLink() {
     redirect(response.url)
 }
 
+/*
+    Temporary methods to make sure aliases are usable!
+*/
+export async function disconnectGmail() {
+    noStore();
+    const { userId } = auth();
+    const mongodbClient = new MongoClient(process.env.MONGO_DB_CONNECTION_STRING, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    });
+
+    try {
+        await mongodbClient.connect();
+        const database = await mongodbClient.db('users');
+        const userCollection = await database.collection('userData');
+        const query = { userId: userId };
+        var foundUser = await userCollection.findOne(query);
+
+        //create auth client
+        const oauth2Client = new google.auth.OAuth2(
+            process.env.GOOGLE_CLIENT_ID,
+            process.env.GOOGLE_CLIENT_SECRET,
+            "https://tallyai.app/linkaccount"
+        );
+
+        //revoke auth token
+        oauth2Client.setCredentials({
+            //access_token: foundUser.gmailAccessToken,
+            refresh_token: foundUser.gmailRefreshToken,
+        });
+        //refreshed accessToken + revoke
+        await oauth2Client.refreshAccessToken(); 
+        await oauth2Client.revokeCredentials();
+        
+
+        //now remove from user's profile
+        var updatedUser = await userCollection.updateOne(query, {
+            $set: {
+                gmailAccessToken: 'NULL',
+                gmailRefreshToken: 'NULL', 
+                gmailAlias: 'NULL'
+            }
+        });
+        await mongodbClient.close(); //close connection
+
+    } catch (error) {
+        await mongodbClient.close();
+        console.log("failed to revoke access!")
+        console.log(error);
+    }
+
+    revalidatePath('/linkaccount')
+}
+
 export async function disconnectEmail() {
     noStore();
 
@@ -140,6 +279,94 @@ export async function disconnectEmail() {
     revalidatePath('/linkaccount') //reset the page
 }
 
+/*
+    Temporary methods to make sure aliases are usable!
+*/
+export async function checkIfGmailIsConnected() {
+    noStore();
+    const { userId } = auth();
+    const mongodbClient = new MongoClient(process.env.MONGO_DB_CONNECTION_STRING, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    });
+
+    try {
+        await mongodbClient.connect();
+        const database = await mongodbClient.db('users');
+        const userCollection = await database.collection('userData');
+        const query = { userId: userId };
+        var foundUser = await userCollection.findOne(query);
+        await mongodbClient.close(); //close connection
+
+        // check if user doesn't exist, or no unipile account connected
+        console.log('checking account id')
+        if (foundUser === null || !foundUser.gmailRefreshToken || foundUser.gmailRefreshToken === 'NULL') {
+            console.log("User not found")
+            return ({
+                connected: false,
+                emailAccount: "does_not_matter"
+            })
+        } else {
+            console.log("FOUND USER IN DATABASE!");
+        }
+
+        //grab aliases (if present)
+        const userGmailAuth = { "type": "authorized_user", "client_id": process.env.GOOGLE_CLIENT_ID, "client_secret": process.env.GOOGLE_CLIENT_SECRET, "refresh_token": foundUser.gmailRefreshToken }
+        const userGmail = await google.auth.fromJSON(userGmailAuth);
+        const gmail = google.gmail({ version: 'v1', auth: userGmail });
+        const aliasesResponse = await gmail.users.settings.sendAs.list({
+            userId: 'me',
+        });
+        const processedAliases = aliasesResponse.data.sendAs.map((trav) => {
+            return {
+                emailAlias: trav.sendAsEmail
+            }
+        })
+
+        // grab active alias address and return
+        return ({
+            connected: true,
+            emailAccount: foundUser.gmailAlias,
+            aliases: processedAliases
+        })
+
+    } catch (error) {
+        console.log(error)
+        return ({
+            connected: false,
+            emailAccount: 'error'
+        })
+    }
+}
+
+export async function writeNewAlias(alias) {
+    noStore();
+    const { userId } = auth();
+    const mongodbClient = new MongoClient(process.env.MONGO_DB_CONNECTION_STRING, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    });
+
+    try {
+        await mongodbClient.connect();
+        const database = await mongodbClient.db('users');
+        const userCollection = await database.collection('userData');
+
+        const query = { userId: userId };
+        var updatedUser = await userCollection.updateOne(query, {
+            $set: {
+                gmailAlias: alias
+            },
+        });
+        mongodbClient.close();
+    } catch (error) {
+        console.log('Failed to change alias')
+        mongodbClient.close();
+    }
+
+    revalidatePath('/linkaccount')
+}
+
 export async function checkIfEmailConnected() {
     noStore();
 
@@ -161,7 +388,7 @@ export async function checkIfEmailConnected() {
         // check if user doesn't exist, or no unipile account connected
         console.log('checking account id')
         if (foundUser === null || !foundUser.unipileAccountId || foundUser.unipileAccountId === 'NULL') {
-               console.log("User not found")
+            console.log("User not found")
             return ({
                 connected: false,
                 emailAccount: "does_not_matter"
@@ -241,7 +468,8 @@ export async function processFile(prevState, formData) {
     }
 
     //check if email is connected
-    var checkEmailConnected = await checkIfEmailConnected()
+    //var checkEmailConnected = await checkIfEmailConnected() // HAD TO CHANGE TO TEMPORARILY DEPRECATE UNIPILE, will reverse soon ;)
+    var checkEmailConnected = await checkIfGmailIsConnected()
     if (!checkEmailConnected.connected) {
         console.log('email not connected')
         retObj.error = 'no_email_connected'
