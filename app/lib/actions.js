@@ -499,3 +499,48 @@ export async function processFile(prevState, formData) {
     }
     return retObj;
 }
+
+//handle sequence modifications + creation of new ones
+export async function processSequences(prevState, formData) {
+    noStore();
+    var retObj = { parsedArray: null, error: null }
+
+    //check if both fields are full
+    if(formData.get('sequence_name') == '') {
+        console.log('HERE!')
+        retObj.error = 'NO_SEQUENCE_NAME'
+        return retObj;
+    }
+
+    if(formData.get('subject_line') == '') {
+        retObj.error = 'NO_SUBJECT_LINE'
+        return retObj;
+    }
+
+    //save it to the database (likely need error check for steps)
+    const { userId } = auth();
+    const mongodbClient = new MongoClient(process.env.MONGO_DB_CONNECTION_STRING, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    });
+
+    try {
+        await mongodbClient.connect()
+        var timestamp = new Date().getTime();
+        const database = mongodbClient.db('users')
+        const sequenceCollection = await database.collection('emailSequences')
+        const savedEmailSequence = {
+            userId: userId, 
+            sequenceName: formData.get('sequence_name') + "@" + timestamp,
+            steps: [] //need to update this later with the state stuff
+        }
+        await sequenceCollection.insertOne(savedEmailSequence)
+        retObj.status = "JUST_SAVED" //show the user it was saved
+        await mongodbClient.close()
+    } catch (error) {
+
+    }
+
+
+    return retObj;
+}
