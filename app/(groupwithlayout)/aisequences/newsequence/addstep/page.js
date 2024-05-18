@@ -3,41 +3,77 @@
 import Navbar from "@/app/ui/Navbar";
 import Link from 'next/link';
 import { useImmerReducer } from 'use-immer';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-const initialState = { template: "", pointerPos: 0 }
+
 
 function reducer(draft, action) {
     switch (action.type) {
         case 'update_template': {
             draft.template = action.template
             draft.pointerPos = action.pointerPos
-            //console.log("pointer pos: " + action.template.length)
+            draft.active = 0
             break;
         }
         case 'update_first_name': {
-            draft.template = draft.template.slice(0, draft.pointerPos) + "{{first_name}}" + draft.template.slice(draft.pointerPos);
+            if (draft.active == 0) {
+                draft.template = draft.template.slice(0, draft.pointerPos) + "{{first_name}}" + draft.template.slice(draft.pointerPos);
+                //still need to update pos
+            } else if (draft.active == 1) {
+                draft.subjectLine = draft.subjectLine.slice(0, draft.subjectLinePointerPos) + "{{first_name}}" + draft.subjectLine.slice(draft.subjectLinePointerPos);
+            }
             break;
         }
         case 'update_last_name': {
-            draft.template = draft.template.slice(0, draft.pointerPos) + "{{last_name}}" + draft.template.slice(draft.pointerPos);
+            if (draft.active == 0) {
+                draft.template = draft.template.slice(0, draft.pointerPos) + "{{last_name}}" + draft.template.slice(draft.pointerPos);
+            } else if (draft.active == 1) {
+                draft.subjectLine = draft.subjectLine.slice(0, draft.subjectLinePointerPos) + "{{last_name}}" + draft.subjectLine.slice(draft.subjectLinePointerPos);
+            }
             break;
         }
         case 'update_company_name': {
-            draft.template = draft.template.slice(0, draft.pointerPos) + "{{company_name}}" + draft.template.slice(draft.pointerPos);
+            if (draft.active == 0) {
+                draft.template = draft.template.slice(0, draft.pointerPos) + "{{company_name}}" + draft.template.slice(draft.pointerPos);
+            } else if (draft.active == 1) {
+                draft.subjectLine = draft.subjectLine.slice(0, draft.subjectLinePointerPos) + "{{company_name}}" + draft.subjectLine.slice(draft.subjectLinePointerPos);
+            }
             break;
         }
         case 'update_full_name': {
-            draft.template = draft.template.slice(0, draft.pointerPos) + "{{full_name}}" + draft.template.slice(draft.pointerPos);
+            if (draft.active == 0) {
+                draft.template = draft.template.slice(0, draft.pointerPos) + "{{full_name}}" + draft.template.slice(draft.pointerPos);
+            } else if (draft.active == 1) {
+                draft.subjectLine = draft.subjectLine.slice(0, draft.subjectLinePointerPos) + "{{full_name}}" + draft.subjectLine.slice(draft.subjectLinePointerPos);
+            }
             break;
         }
         case 'ai_reference': {
-            draft.template = draft.template.slice(0, draft.pointerPos) + "@ai_reference" + draft.template.slice(draft.pointerPos);
+            if (draft.active == 0) {
+                draft.template = draft.template.slice(0, draft.pointerPos) + "@ai_reference" + draft.template.slice(draft.pointerPos);
+            } else if (draft.active == 1) {
+                draft.subjectLine = draft.subjectLine.slice(0, draft.subjectLinePointerPos) + "@ai_reference" + draft.subjectLine.slice(draft.subjectLinePointerPos);
+            }
             break;
         }
         case 'update_pointer_pos': {
             draft.pointerPos = action.pointerPos
-            console.log("pointer pos: " + action.pointerPos)
+            draft.active = 0
+            break;
+        }
+        case 'update_line': {
+            draft.subjectLine = action.subjectLine
+            draft.subjectLinePointerPos = action.subjectLinePointerPos
+            draft.active = 1
+            break;
+        }
+        case 'update_line_pointer_pos': {
+            draft.subjectLinePointerPos = action.pointerPos
+            draft.active = 1
+            break;
+        }
+        case 'update_step_name': {
+            draft.stepName = action.nextStepName;
             break;
         }
     }
@@ -45,24 +81,87 @@ function reducer(draft, action) {
 
 export default function AddStep({ searchParams }) {
 
+    const initialState = { template: "", pointerPos: 0, subjectLine: "", subjectLinePointerPos: 0, active: -1, stepName: ""}
     const [state, dispatch] = useImmerReducer(reducer, initialState)
     const [stepName, setStepName] = useState('')
 
-    console.log(searchParams.stepName)
+    //these HAVE to be in order, then execute in order of each other
+    useEffect(() => {
+        var tempPointerPos = localStorage.getItem("pointer_pos");
+        var tempSubjectLine = localStorage.getItem("subject_line")
+        var tempTemplate = localStorage.getItem("template")
+        var tempSubjectLinePointerPos = localStorage.getItem("subject_line_pos")
+        var tempStepName = localStorage.getItem("step_name")
+        if(tempSubjectLine) {
+            dispatch({
+                type: "update_line",
+                subjectLine: tempSubjectLine,
+                subjectLinePointerPos: tempSubjectLinePointerPos
+            })
+        }
+        if(tempTemplate) {
+            dispatch({
+                type: "update_template",
+                template: tempTemplate,
+                pointerPos: tempPointerPos
+            })
+        }
+        if(tempStepName) {
+            dispatch({
+                type: "update_step_name",
+                nextStepName: tempStepName
+            })
+        }
+    }, [])
 
-
+    useEffect(() => {
+        localStorage.setItem("active", state.active)
+        localStorage.setItem("pointer_pos", state.pointerPos)
+        localStorage.setItem("subject_line", state.subjectLine)
+        localStorage.setItem("template", state.template)
+        localStorage.setItem("subject_line_pos", state.subjectLinePointerPos)
+        localStorage.setItem("step_name", state.stepName)
+    }, [state]) 
+    
     return (
         <div className="min-w-full">
             <Navbar url="AI Sequences / New Sequence / Add Step" />
+
             <div className="flex flex-row">
                 <div className="shadow-m rounded-lg border-2 border-black mb-20 p-2 m-4 w-1/2">
+                    <label htmlFor="comment" className="block text-sm font-medium leading-6 ml-2 text-gray-900 ">
+                        Subject line
+                    </label>
+                    <div className="m-2">
+                        <input
+                            style={{ fontSize: '12px' }}
+                            onClick={(e) => {
+                                e.preventDefault()
+                                dispatch({
+                                    type: "update_line_pointer_pos",
+                                    pointerPos: e.target.selectionStart
+                                })
+                            }}
+                            onChange={(e) => {
+                                e.preventDefault();
+                                dispatch({
+                                    type: "update_line",
+                                    subjectLine: e.target.value,
+                                    subjectLinePointerPos: e.target.selectionStart
+                                })
+                            }}
+                            value={state.subjectLine}
+                            className="block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                            placeholder="Hi ...."
+                        />
+                    </div>
                     <div className="m-2">
                         <label htmlFor="comment" className="block text-sm font-medium leading-6 text-gray-900">
                             Template
                         </label>
                         <div>
                             <textarea
-                                rows={20}
+                                rows={15}
                                 onClick={(e) => {
                                     e.preventDefault()
                                     dispatch({
@@ -70,6 +169,7 @@ export default function AddStep({ searchParams }) {
                                         pointerPos: e.target.selectionStart
                                     })
                                 }}
+                                style={{ fontSize: '12px' }}
                                 className="w-full mt-2 block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                 onChange={(e) => {
                                     e.preventDefault();
@@ -89,11 +189,6 @@ export default function AddStep({ searchParams }) {
                                     pathname: '/aisequences/newsequence/addstep/example',
                                     query: { name: 'Example #1', template: state.template, stepName: searchParams.stepName },
                                 }}
-                                onClick={(e) => {
-                                    //can prevent default to make it not submit to the next page
-                                    localStorage.setItem("step_name", stepName)
-                                    localStorage.setItem('template', state.template)
-                                }}
                                 className="whitespace-nowrap rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                             >
                                 Next
@@ -111,11 +206,15 @@ export default function AddStep({ searchParams }) {
                             <input
                                 style={{ fontSize: '12px' }}
                                 onChange={(e) => {
-                                    e.preventDefault(); 
-                                    setStepName(e.target.value)
+                                    e.preventDefault();
+                                    dispatch({
+                                        type: "update_step_name",
+                                        nextStepName: e.target.value
+                                    })
                                 }}
                                 className="block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                 placeholder="Introduction email"
+                                value={state.stepName}
                             />
                         </div>
                     </div>

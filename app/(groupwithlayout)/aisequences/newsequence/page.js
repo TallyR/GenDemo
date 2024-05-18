@@ -16,10 +16,12 @@ function reducer(draft, action) {
     switch (action.type) {
         case 'update_sequence_name': {
             draft.sequenceName = action.nextSequenceName
+            localStorage.setItem('sequence_name', action.nextSequenceName)
             break;
         }
         case 'update_subject_line': {
             draft.subjectLine = action.nextSubjectLine
+            localStorage.setItem('subject_line', action.nextSubjectLine)
             break;
         }
         case 'update_first_name': {
@@ -45,8 +47,7 @@ export default function NewSequence() {
 
     //probably will need to modify this (using a seprate reducer for this)
     const initialState = { parsedArray: null, error: null };
-    const [stateForm, dispatchForm] = useFormState(processSequences, initialState);
-
+    const [stateForm, dispatchForm] = useFormState(processSequences, initialState); 
     const [state, dispatch] = useImmerReducer(reducer, initialState)
 
     console.log('here')
@@ -130,6 +131,18 @@ export default function NewSequence() {
         }
     }, [stateForm]);
 
+    //for sequence name
+    const [sequenceName, setSequenceName] = useState('')
+    useEffect(() => {
+        const grab = localStorage.getItem('sequence_name')
+        if(localStorage.getItem('sequence_name')) {
+            setSequenceName(grab)
+        }
+    }, [])
+    useEffect(() => {
+        localStorage.setItem('sequence_name', sequenceName)
+    }, [sequenceName])
+
     return (
         <div className="min-w-full" key="asjdfhsd">
             <Navbar url="AI Sequences / New Sequence" />
@@ -144,32 +157,9 @@ export default function NewSequence() {
                             <input
                                 name="sequence_name"
                                 id="sequence_name"
-                                value={state.sequenceName}
+                                value={sequenceName}
                                 onChange={(e) => {
-                                    dispatch({
-                                        type: "update_sequence_name",
-                                        nextSequenceName: e.target.value
-                                    })
-                                }}
-                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                placeholder=""
-                            />
-                        </div>
-
-                        <label className="block text-sm font-medium leading-6 text-gray-900 pt-4">
-                            Subject line
-                        </label>
-                        <div className="mt-2">
-                            <input
-                                name="subject_line"
-                                id="subject_line"
-                                value={state.subjectLine}
-                                onChange={(e) => {
-                                    e.preventDefault();
-                                    dispatch({
-                                        type: "update_subject_line",
-                                        nextSubjectLine: e.target.value
-                                    })
+                                    setSequenceName(e.target.value)
                                 }}
                                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                 placeholder=""
@@ -229,59 +219,6 @@ export default function NewSequence() {
 
                 </form>
 
-                <div className="mt-4 ml-8 shadow-m rounded-lg border-2 border-black mb-20 p-2 flex max-h-[300px] flex-col items-start">
-                    <label className="block text-sm font-medium leading-6 text-gray-900">
-                        Insert variables
-                    </label>
-                    <button
-                        onClick={(e) => {
-                            e.preventDefault();
-                            dispatch({
-                                type: "update_first_name",
-                            })
-                        }}
-                        type="button"
-                        className="mt-4 whitespace-nowrap rounded-lg bg-green-600 px-3 py-3 text-xs text-white shadow-sm justify-center text-center hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-                    >
-                        first name
-                    </button>
-                    <button
-                        onClick={(e) => {
-                            e.preventDefault();
-                            dispatch({
-                                type: "update_last_name",
-                            })
-                        }}
-                        type="button"
-                        className="mt-4 whitespace-nowrap rounded-lg bg-green-600 px-3 py-3 text-xs text-white shadow-sm justify-center text-center hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-                    >
-                        last name
-                    </button>
-                    <button
-                        onClick={(e) => {
-                            e.preventDefault();
-                            dispatch({
-                                type: "update_company_name",
-                            })
-                        }}
-                        type="button"
-                        className="mt-4 whitespace-nowrap rounded-lg bg-green-600 px-3 py-3 text-xs text-white shadow-sm justify-center text-center hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-                    >
-                        company name
-                    </button>
-                    <button
-                        onClick={(e) => {
-                            e.preventDefault();
-                            dispatch({
-                                type: "update_full_name",
-                            })
-                        }}
-                        type="button"
-                        className="mt-4 whitespace-nowrap rounded-lg bg-green-600 px-3 py-3 text-xs text-white shadow-sm justify-center text-center hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-                    >
-                        full name
-                    </button>
-                </div>
             </div>
         </div>
     );
