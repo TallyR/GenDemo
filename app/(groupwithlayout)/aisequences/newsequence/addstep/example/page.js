@@ -3,6 +3,8 @@
 import Navbar from "@/app/ui/Navbar";
 import Link from 'next/link';
 import { useImmerReducer } from 'use-immer';
+import { useState } from 'react';
+import { useEffect } from 'react';
 
 function replacePlaceholdersWithJSX(text) {
     // Split the entire text by new lines to handle each line as a paragraph
@@ -38,16 +40,27 @@ function replacePlaceholdersWithJSX(text) {
 
 export default function Example({ searchParams }) {
 
-    console.log(localStorage.getItem("template"))
+    const [process, setProcess] = useState('')
+    const [stepName, setStepName] = useState('')
 
-    var process = replacePlaceholdersWithJSX(localStorage.getItem("template"))
-
+    useEffect(() => {
+       setProcess(replacePlaceholdersWithJSX(localStorage.getItem("template")))
+       setStepName(localStorage.getItem("step_name"))
+    }, []);
+    
+    //not sure if even needed
+    /*
+    useEffect(() => {
+        console.log('process is changing')
+    }, [process]);
+    */
+   
     return (
         <div className="min-w-full h-dvh">
             <Navbar url={"AI Sequences / New Sequence / Add Step / " + searchParams.name} />
             <div className="shadow-m rounded-lg border-2 p-4 border-black m-2">
                 <label className="block text-m font-medium leading-6 text-gray-900">
-                    Fill in an "{localStorage.getItem("step_name")}" example to teach Tally
+                    Fill in an "{stepName}" example to teach Tally
                 </label>
                 <div className="text-sm shadow-m rounded-lg border p-4 border-black m-2 h-1/2">
                     {process}

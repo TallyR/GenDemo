@@ -79,7 +79,6 @@ export default function AddStep({ searchParams }) {
                                         pointerPos: e.target.selectionStart
                                     })
                                 }}
-
                                 value={state.template}
                             />
                         </div>
