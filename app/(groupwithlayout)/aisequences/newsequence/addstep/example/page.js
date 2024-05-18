@@ -38,16 +38,16 @@ function replacePlaceholdersWithJSX(text) {
 
 export default function Example({ searchParams }) {
 
-    console.log(replacePlaceholdersWithJSX(searchParams.template))
+    console.log(localStorage.getItem("template"))
 
-    var process = replacePlaceholdersWithJSX(searchParams.template)
+    var process = replacePlaceholdersWithJSX(localStorage.getItem("template"))
 
     return (
         <div className="min-w-full h-dvh">
             <Navbar url={"AI Sequences / New Sequence / Add Step / " + searchParams.name} />
             <div className="shadow-m rounded-lg border-2 p-4 border-black m-2">
                 <label className="block text-m font-medium leading-6 text-gray-900">
-                    Fill in {searchParams.name.toLowerCase()}
+                    Fill in an "{localStorage.getItem("step_name")}" example to teach Tally
                 </label>
                 <div className="text-sm shadow-m rounded-lg border p-4 border-black m-2 h-1/2">
                     {process}

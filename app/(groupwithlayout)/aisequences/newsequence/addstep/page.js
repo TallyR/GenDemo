@@ -3,6 +3,7 @@
 import Navbar from "@/app/ui/Navbar";
 import Link from 'next/link';
 import { useImmerReducer } from 'use-immer';
+import { useState } from 'react';
 
 const initialState = { template: "", pointerPos: 0 }
 
@@ -45,6 +46,7 @@ function reducer(draft, action) {
 export default function AddStep({ searchParams }) {
 
     const [state, dispatch] = useImmerReducer(reducer, initialState)
+    const [stepName, setStepName] = useState('')
 
     console.log(searchParams.stepName)
 
@@ -88,6 +90,11 @@ export default function AddStep({ searchParams }) {
                                     pathname: '/aisequences/newsequence/addstep/example',
                                     query: { name: 'Example #1', template: state.template, stepName: searchParams.stepName },
                                 }}
+                                onClick={(e) => {
+                                    //can prevent default to make it not submit to the next page
+                                    localStorage.setItem("step_name", stepName)
+                                    localStorage.setItem('template', state.template)
+                                }}
                                 className="whitespace-nowrap rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                             >
                                 Next
@@ -104,6 +111,10 @@ export default function AddStep({ searchParams }) {
                         <div className="mt-2 w-full">
                             <input
                                 style={{ fontSize: '12px' }}
+                                onChange={(e) => {
+                                    e.preventDefault(); 
+                                    setStepName(e.target.value)
+                                }}
                                 className="block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                 placeholder="Introduction email"
                             />
