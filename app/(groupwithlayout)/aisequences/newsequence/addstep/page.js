@@ -115,12 +115,12 @@ export default function AddStep({ searchParams }) {
     }, [])
 
     useEffect(() => {
-        localStorage.setItem("active", state.active)
-        localStorage.setItem("pointer_pos", state.pointerPos)
-        localStorage.setItem("subject_line", state.subjectLine)
-        localStorage.setItem("template", state.template)
-        localStorage.setItem("subject_line_pos", state.subjectLinePointerPos)
-        localStorage.setItem("step_name", state.stepName)
+        localStorage.setItem("active", state.active !== undefined ? state.active : -1)
+        localStorage.setItem("pointer_pos", state.pointerPos !== undefined ? state.pointerPos : 0)
+        localStorage.setItem("subject_line", state.subjectLine !== undefined ? state.subjectLine : "")
+        localStorage.setItem("template", state.template !== undefined ? state.template : "" )
+        localStorage.setItem("subject_line_pos", state.subjectLinePointerPos !== undefined ? state.tempSubjectLinePointerPos : 0)
+        localStorage.setItem("step_name", state.stepName !== undefined ? state.stepName : "")
     }, [state]) 
     
     return (
@@ -187,7 +187,7 @@ export default function AddStep({ searchParams }) {
                                 type="button"
                                 href={{
                                     pathname: '/aisequences/newsequence/addstep/example',
-                                    query: { name: 'Example #1', template: state.template, stepName: searchParams.stepName },
+                                    query: { name: 'Example #1'},
                                 }}
                                 className="whitespace-nowrap rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                             >

@@ -3,15 +3,21 @@
 import Navbar from "@/app/ui/Navbar";
 import Link from 'next/link';
 import { useImmerReducer } from 'use-immer';
+import { useState, useEffect } from 'react';
 
-export default function TestTemplate({ searchParams }) {
+export default function TestTemplate() {
+
+    const [stepName, setStepName] = useState('')
+    useEffect(() => {
+        setStepName(localStorage.getItem('step_name'))
+    }, []);
 
     return (
         <div className="min-w-full h-dvh">
             <Navbar url={"AI Sequences / New Sequence / Add Step / Test"} />
             <div className="p-4">
                 <label className="block text-xl font-medium leading-6 text-gray-900">
-                    {`Paste a Linkedin URL to test your the “${searchParams.stepName}” step`}
+                    {`Paste a Linkedin URL to test your the “${stepName}” step`}
                 </label>
                 <div className="mt-4 flex items-center">
                     <input
