@@ -66,30 +66,37 @@ function getUniqueRandom() {
 
 export default function Example({ searchParams }) {
 
-    const router = useRouter();
+    //for input fields
+    const [sLine, setSLine] = useState({})
+    //console.log("Whats is storage")
+    //console.log(bodyInit)
+    const [body, setBody] = useState({}) //its the initialations
+
+    /*
+        some version of this state
+            -> fits in, but doesnt update for some reason?
+    */
     const [process, setProcess] = useState('')
     const [stepName, setStepName] = useState('')
     const [subjectLine, setSubjectLine] = useState('')
 
-    //for input fields
-    const [sLine, setSLine] = useState({})
-    const [body, setBody] = useState({})
+
     //const [exampleNumber, setExampleNumber] = useState(0)
 
     //var exampleNumber = -1;
 
+    var initialLoad = false;
 
-    function replacePlaceholdersWithJSX(text, setObj, exampleNumber) {
+
+    function replacePlaceholdersWithJSX(text, setObj, exampleNumber, body, numb) {
         var startPoint = -1;
         //console.log('start point: ')
         //console.log(startPoint)
         // Split the entire text by new lines to handle each line as a paragraph
         const lines = text.split('\n');
 
-       
-
         // Process each line to replace placeholders and wrap in <p> tags
-        console.log("Start")
+        //console.log("Start")
         const content = lines.map((line, lineIndex) => {
             // Split and replace placeholders within each line
             const parts = line.split(/({{first_name}}|{{last_name}}|{{company_name}}|{{full_name}}|@ai_reference)/); //change it to ai linkedin reference
@@ -100,7 +107,7 @@ export default function Example({ searchParams }) {
                     case '{{first_name}}':
                         startPoint += 1;
                         passRef = String(startPoint)
-                        return <input key={`${exampleNumber}-${rand}-${startPoint}`} value={body[`${exampleNumber}-${passRef}`]} placeholder="first name" type="text" onChange={(e) => {
+                        return <input key={`${exampleNumber}-${numb}-${startPoint}`} value={body[`${exampleNumber}-${passRef}`] || ''} placeholder="first name" type="text" onChange={(e) => {
                             setObj(prevBody => {
                                 return { ...prevBody, [`${exampleNumber}-${passRef}`]: e.target.value };
                             })
@@ -108,7 +115,7 @@ export default function Example({ searchParams }) {
                     case '{{last_name}}':
                         startPoint += 1;
                         passRef = String(startPoint)
-                        return <input key={`${exampleNumber}-${rand}-${startPoint}`} value={body[`${exampleNumber}-${passRef}`]} placeholder="last name" onChange={(e) => {
+                        return <input key={`${exampleNumber}-${numb}-${startPoint}`} value={body[`${exampleNumber}-${passRef}`] || ''} placeholder="last name" onChange={(e) => {
                             setObj(prevBody => {
                                 return { ...prevBody, [`${exampleNumber}-${passRef}`]: e.target.value };
                             })
@@ -116,7 +123,7 @@ export default function Example({ searchParams }) {
                     case '{{company_name}}':
                         startPoint += 1;
                         passRef = String(startPoint)
-                        return <input key={`${exampleNumber}-${rand}-${startPoint}`} value={body[`${exampleNumber}-${passRef}`]} placeholder="company name" onChange={(e) => {
+                        return <input key={`${exampleNumber}-${numb}-${startPoint}`} value={body[`${exampleNumber}-${passRef}`] || ''} placeholder="company name" onChange={(e) => {
                             setObj(prevBody => {
                                 return { ...prevBody, [`${exampleNumber}-${passRef}`]: e.target.value };
                             })
@@ -124,7 +131,7 @@ export default function Example({ searchParams }) {
                     case '{{full_name}}':
                         startPoint += 1;
                         passRef = String(startPoint)
-                        return <input key={`${exampleNumber}-${rand}-${startPoint}`} value={body[`${exampleNumber}-${passRef}`]} placeholder="full name" onChange={(e) => {
+                        return <input key={`${exampleNumber}-${numb}-${startPoint}`} value={body[`${exampleNumber}-${passRef}`] || ''} placeholder="full name" onChange={(e) => {
                             setObj(prevBody => {
                                 return { ...prevBody, [`${exampleNumber}-${passRef}`]: e.target.value };
                             })
@@ -132,7 +139,7 @@ export default function Example({ searchParams }) {
                     case '@ai_reference':
                         startPoint += 1;
                         passRef = String(startPoint)
-                        return <input rows={1} key={`${exampleNumber}-${rand}-${startPoint}`} value={body[`${exampleNumber}-${passRef}`]} placeholder="example linkedin reference" onChange={(e) => {
+                        return <input rows={1} key={`${exampleNumber}-${numb}-${startPoint}`} value={body[`${exampleNumber}-${passRef}`] || ''} placeholder="example linkedin reference" onChange={(e) => {
                             setObj(prevBody => {
                                 return { ...prevBody, [`${exampleNumber}-${passRef}`]: e.target.value };
                             })
@@ -143,21 +150,85 @@ export default function Example({ searchParams }) {
             });
 
             // Wrap the processed line in a <p> tag
-            const rand = (getUniqueRandom())
-            return <p className="m-1" key={rand}>{lineContent}</p>;
+            //numb++;
+            return <p className="m-1" key={lineIndex}>{lineContent}</p>;
         });
 
         return content;
     }
 
+    /*
+        Since every value now has a unique key associated, i think we can store everything in object in local storage 
+
+        example_information => {}
+
+        Can match how react changes stuff in state!!!
+    */
+
+    var triggerFromSetter = false
+
     //TESTING PURPOSES
     useEffect(() => {
-        console.log("Body")
-        console.log(body)
+        //console.log("Body")
+        //console.log(body)
+
+        //grab storage (if it exists)
+        var exampleNumber = 0;
+        if (searchParams.name === 'Example #1') {
+            exampleNumber = 0;
+        } else if (searchParams.name === 'Example #2') {
+            exampleNumber = 1;
+        }
+
+        var prevStorage = localStorage.getItem('example_information_body') ? JSON.parse(localStorage.getItem('example_information_body')) : {}
+        //console.log(prevStorage)
+        localStorage.setItem('example_information_body', JSON.stringify({ ...prevStorage, ...body }))
+
+
+        //console.log("updating the state!!!!!")
+
+        var exampleNumber = 0;
+        if (searchParams.name === 'Example #1') {
+            exampleNumber = 0;
+        } else if (searchParams.name === 'Example #2') {
+            exampleNumber = 1;
+        }
+
+        if (true) {
+            console.log("inside trigger")
+            triggerFromSetter = false
+            setProcess(replacePlaceholdersWithJSX(localStorage.getItem("template"), setBody, exampleNumber, body, 12))
+        }
+
+
+        //console.log("New local storage: ")
+        //console.log(JSON.parse(localStorage.getItem('example_information_body')))
     }, [body])
+
     useEffect(() => {
         console.log("Subject line")
-        console.log(sLine)
+        //console.log(sLine)
+        //var prevStorage = localStorage.getItem('example_information') ? localStorage.getItem('example_information') : {}
+        //localStorage.setItem('example_information', {...prevStorage, sLine})
+        //console.log("New local storage: ")
+        //console.log(JSON.stringify(JSON.parse(localStorage.getItem('example_information'))))
+
+        
+        var exampleNumber = 0;
+        if (searchParams.name === 'Example #1') {
+            exampleNumber = 0;
+        } else if (searchParams.name === 'Example #2') {
+            exampleNumber = 1;
+        }
+        
+
+        var prevStorage = localStorage.getItem('example_information_subject_line') ? JSON.parse(localStorage.getItem('example_information_subject_line')) : {}
+        //console.log(prevStorage)
+        localStorage.setItem('example_information_subject_line', JSON.stringify({ ...prevStorage, ...sLine}))
+
+        console.log(localStorage.getItem('example_information_subject_line'))
+
+        setSubjectLine(replacePlaceholdersWithJSX(localStorage.getItem("subject_line"), setSLine, exampleNumber, sLine, 13))
     }, [sLine])
     //TESTING PURPOSES
 
@@ -168,10 +239,25 @@ export default function Example({ searchParams }) {
         } else if (searchParams.name === 'Example #2') {
             exampleNumber = 1;
         }
-        setProcess(prevState => replacePlaceholdersWithJSX(localStorage.getItem("template"), setBody, exampleNumber))
+        //('changinge initial load to true')
+        initialLoad = true;
+        /*
+            You can rewrite this to load from localStorage the body and subjectLine
+        */
+        //console.log("Grabbing the past form information from memory:")
+        //console.log(JSON.parse(localStorage.getItem('example_information_body')))
+        console.log("trigger set to true")
+        triggerFromSetter = true
+        setBody(JSON.parse(localStorage.getItem('example_information_body')))
+        setSLine(JSON.parse(localStorage.getItem('example_information_subject_line')))
+
+        //console.log(JSON.parse(localStorage.getItem('example_information_body')))
+        //setProcess(replacePlaceholdersWithJSX(localStorage.getItem("template"), setBody, exampleNumber, body))
+        //setProcess(replacePlaceholdersWithJSX(localStorage.getItem("template"), setBody, exampleNumber, body))
         setStepName(localStorage.getItem("step_name"))
-        setSubjectLine(prevState => replacePlaceholdersWithJSX(localStorage.getItem("subject_line"), setSLine, exampleNumber))
-    }, [router.pathname, router.query, searchParams.name]);
+        //setSubjectLine(replacePlaceholdersWithJSX(localStorage.getItem("subject_line"), setSLine, exampleNumber, sLine, 13))
+    }, [searchParams.name]);
+
 
     return (
         <div className="min-w-full h-dvh" key={`${searchParams.name} main_app`}>
