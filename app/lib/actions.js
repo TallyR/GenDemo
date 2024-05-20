@@ -541,6 +541,35 @@ export async function processSequences(prevState, formData) {
 
     }
 
-
     return retObj;
+}
+
+export async function createNewSequence(newSequenceName) {
+    noStore();
+    const { userId } = auth();
+    const mongodbClient = new MongoClient(process.env.MONGO_DB_CONNECTION_STRING, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    });
+    var timestamp = new Date().getTime();
+    const seqName = newSequenceName + "@" + timestamp;
+
+    //save sequence
+    try {
+        await mongodbClient.connect()
+        const database = mongodbClient.db('users')
+        const sequenceCollection = await database.collection('emailSequences')
+        const savedEmailSequence = {
+            userId: userId, 
+            sequenceName: seqName,
+            steps: [] //need to update this later with the state stuff
+        }
+        await sequenceCollection.insertOne(savedEmailSequence)
+        await mongodbClient.close()
+    } catch(error) {
+
+    }
+
+    //re-direct to edit page
+    redirect(`/aisequences/newsequence?sequenceName=${encodeURIComponent(seqName)}`)
 }

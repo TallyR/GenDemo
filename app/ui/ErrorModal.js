@@ -4,7 +4,7 @@ import { Fragment, useState } from 'react';
 import clsx from 'clsx';
 
 
-export default function ErrorModal({ errorTitle, errorMessage, showSelf, onExit, success=false}) {
+export default function ErrorModal({ errorTitle, errorMessage, showSelf, onExit, success=false }) {
     //let [open, setOpen] = useState(true)
 
     return (

@@ -19,7 +19,7 @@ function isSubset(str1, str2) {
     return true;
 }
 
-export default function ProspectTable({ jsxEntries }) {
+export default function ProspectTable({ jsxEntries, triggerModal }) {
 
     const [searchTerm, setSearchTerm] = useState('');
     var filteredJsxEntries = jsxEntries.filter(trav => {
@@ -49,13 +49,16 @@ export default function ProspectTable({ jsxEntries }) {
                     <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
                 </div>
                 <div className="flex flex-row-reverse pr-16 pl-20">
-                    <Link
+                    <button
                         type="button"
-                        href="/aisequences/newsequence"
+                        onClick={(e) => {
+                            e.preventDefault()
+                            triggerModal(true)
+                        }}
                         className="whitespace-nowrap rounded-lg bg-indigo-600 px-4 py-4 text-sm text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                     >
                         New Sequence
-                    </Link>
+                    </button>
                 </div>
             </div>
             <div className="pr-2">

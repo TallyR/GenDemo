@@ -8,9 +8,10 @@ import Navbar from "@/app/ui/Navbar";
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid'
 import SequencesTable from "@/app/ui/SequencesTable";
 import Toggle from "@/app/ui/Toggle";
+import NewSequenceModal from "@/app/ui/NewSequenceModal";
+import { useState } from 'react';
 
 export default function CustomPrompt() {
-
 
     //this will eventually be grabbed from the backend
     const processedJobs = [
@@ -49,10 +50,16 @@ export default function CustomPrompt() {
         )
     })
 
+        //error modal handling
+        const [showErrorModal, setErrorModal] = useState(false)
+        const [errorTitle, setErrorTitle] = useState('');
+        const [errorMessage, setErrorMessage] = useState('');
+
     return (
         <div className="min-w-full">
             <Navbar url="Your Sequences" />
-            <SequencesTable jsxEntries={jsxEntries} />
+            <NewSequenceModal onExit={setErrorModal} showSelf={showErrorModal} errorTitle={errorTitle} errorMessage={errorMessage}/>
+            <SequencesTable jsxEntries={jsxEntries} triggerModal={setErrorModal}/>
         </div>
     );
 }

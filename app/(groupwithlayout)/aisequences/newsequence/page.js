@@ -43,11 +43,11 @@ function reducer(draft, action) {
     }
 }
 
-export default function NewSequence() {
+export default function NewSequence({ searchParams }) {
 
     //probably will need to modify this (using a seprate reducer for this)
     const initialState = { parsedArray: null, error: null };
-    const [stateForm, dispatchForm] = useFormState(processSequences, initialState); 
+    const [stateForm, dispatchForm] = useFormState(processSequences, initialState);
     const [state, dispatch] = useImmerReducer(reducer, initialState)
 
     console.log('here')
@@ -135,12 +135,18 @@ export default function NewSequence() {
     const [sequenceName, setSequenceName] = useState('')
     useEffect(() => {
         const grab = localStorage.getItem('sequence_name')
-        if(localStorage.getItem('sequence_name')) {
+        if (localStorage.getItem('sequence_name')) {
             setSequenceName(grab)
+        }
+        console.log(searchParams.sequenceName)
+        if (searchParams.sequenceName !== undefined) {
+            localStorage.setItem('sequence_name', searchParams.sequenceName)
         }
     }, [])
     useEffect(() => {
-        localStorage.setItem('sequence_name', sequenceName)
+        if (searchParams.sequenceName !== undefined) {
+            localStorage.setItem('sequence_name', sequenceName)
+        }
     }, [sequenceName])
 
     return (
@@ -150,27 +156,17 @@ export default function NewSequence() {
             <div className="flex">
                 <form className="w-1/2" action={dispatchForm} key="unique">
                     <div className="mt-4 ml-4 w-full shadow-m rounded-lg border-2 border-black mb-20 p-2">
-                        <label className="block text-sm font-medium leading-6 text-gray-900">
+                        <label className="block text-sm font-medium leading-6 text-gray-900 mb-2">
                             Sequence name
                         </label>
-                        <div className="mt-2">
-                            <input
-                                name="sequence_name"
-                                id="sequence_name"
-                                value={sequenceName}
-                                onChange={(e) => {
-                                    setSequenceName(e.target.value)
-                                }}
-                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                placeholder=""
-                            />
-                        </div>
+                        <label className="text-lg pl-1 font-semibold">
+                            {searchParams.sequenceName}
+                        </label>
 
-                        <div className="flex mt-5 items-center">
+                        <div className="flex mt-2 items-center">
                             <label className="block text-sm font-medium leading-6 text-gray-900">
-                                Sequence Steps
+                                Sequence steps
                             </label>
-
                             <Link
                                 type="button"
                                 href={{
@@ -216,9 +212,7 @@ export default function NewSequence() {
                             </button>
                         </div>
                     </div>
-
                 </form>
-
             </div>
         </div>
     );
