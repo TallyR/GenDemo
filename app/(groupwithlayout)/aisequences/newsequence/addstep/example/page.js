@@ -2,47 +2,9 @@
 
 import Navbar from "@/app/ui/Navbar";
 import Link from 'next/link';
-import { useImmerReducer } from 'use-immer';
 import { useState } from 'react';
 import { useEffect } from 'react';
-//import { JSDOM } from 'jsdom';
-import JSXParser from 'jsx-parser'
 import React from 'react';
-import { useRouter } from 'next/navigation'
-
-function extractInputValuesFromJSX(element) {
-    let values = [];
-
-    // Function to recursively traverse the React element tree
-    function traverse(node) {
-        // React.Children provides utilities for dealing with children in React elements
-        React.Children.forEach(node.props.children, (child) => {
-            if (React.isValidElement(child)) {
-                if (child.type === 'input') {
-                    // Collect input values or placeholders
-                    const value = child.props.value || child.props.placeholder || '';
-                    //console.log(JSXParser(element))
-                    if (value) values.push(value);
-                } else if (child.props && child.props.children) {
-                    // Recurse if the child has its own children
-                    traverse(child);
-                }
-            }
-        });
-    }
-
-    if (React.isValidElement(element) && element.props.children) {
-        traverse(element);
-    }
-
-    return values;
-}
-
-function getUniqueRandom() {
-    const min = 1;
-    const max = 100000000; // Very high number to reduce the chance of collisions
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
 
 /*
     Plan for dynamic state: 
@@ -56,7 +18,7 @@ function getUniqueRandom() {
     Solution -> we pass in state that associate with each field????
 
     Key format
-    example # - random number - pos (collison can happen still? :/)
+    example # - fixed number - pos (collison can happen still? :/)
         ^ this will help with rebuild on the backend
 
     If you keep on the backend
@@ -66,42 +28,19 @@ function getUniqueRandom() {
 
 export default function Example({ searchParams }) {
 
-    //for input fields
     const [sLine, setSLine] = useState({})
-    //console.log("Whats is storage")
-    //console.log(bodyInit)
-    const [body, setBody] = useState({}) //its the initialations
-
-    /*
-        some version of this state
-            -> fits in, but doesnt update for some reason?
-    */
+    const [body, setBody] = useState({})
     const [process, setProcess] = useState('')
     const [stepName, setStepName] = useState('')
     const [subjectLine, setSubjectLine] = useState('')
 
-
-    //const [exampleNumber, setExampleNumber] = useState(0)
-
-    //var exampleNumber = -1;
-
-    var initialLoad = false;
-
-
     function replacePlaceholdersWithJSX(text, setObj, exampleNumber, body, numb) {
         var startPoint = -1;
-        //console.log('start point: ')
-        //console.log(startPoint)
-        // Split the entire text by new lines to handle each line as a paragraph
         const lines = text.split('\n');
-
-        // Process each line to replace placeholders and wrap in <p> tags
-        //console.log("Start")
         const content = lines.map((line, lineIndex) => {
             // Split and replace placeholders within each line
             const parts = line.split(/({{first_name}}|{{last_name}}|{{company_name}}|{{full_name}}|@ai_reference)/); //change it to ai linkedin reference
             const lineContent = parts.map((part, index) => {
-                const rand = (getUniqueRandom())
                 var passRef = ""
                 switch (part) {
                     case '{{first_name}}':
@@ -150,114 +89,31 @@ export default function Example({ searchParams }) {
             });
 
             // Wrap the processed line in a <p> tag
-            //numb++;
             return <p className="m-1" key={lineIndex}>{lineContent}</p>;
         });
-
         return content;
     }
 
-    /*
-        Since every value now has a unique key associated, i think we can store everything in object in local storage 
-
-        example_information => {}
-
-        Can match how react changes stuff in state!!!
-    */
-
-    var triggerFromSetter = false
-
-    //TESTING PURPOSES
     useEffect(() => {
-        //console.log("Body")
-        //console.log(body)
-
-        //grab storage (if it exists)
         var exampleNumber = 0;
         if (searchParams.name === 'Example #1') {
             exampleNumber = 0;
         } else if (searchParams.name === 'Example #2') {
             exampleNumber = 1;
         }
-
-        var prevStorage = localStorage.getItem('example_information_body') ? JSON.parse(localStorage.getItem('example_information_body')) : {}
-        //console.log(prevStorage)
-        localStorage.setItem('example_information_body', JSON.stringify({ ...prevStorage, ...body }))
-
-
-        //console.log("updating the state!!!!!")
-
-        var exampleNumber = 0;
-        if (searchParams.name === 'Example #1') {
-            exampleNumber = 0;
-        } else if (searchParams.name === 'Example #2') {
-            exampleNumber = 1;
-        }
-
-        if (true) {
-            console.log("inside trigger")
-            triggerFromSetter = false
-            setProcess(replacePlaceholdersWithJSX(localStorage.getItem("template"), setBody, exampleNumber, body, 12))
-        }
-
-
-        //console.log("New local storage: ")
-        //console.log(JSON.parse(localStorage.getItem('example_information_body')))
-    }, [body])
-
-    useEffect(() => {
-        console.log("Subject line")
-        //console.log(sLine)
-        //var prevStorage = localStorage.getItem('example_information') ? localStorage.getItem('example_information') : {}
-        //localStorage.setItem('example_information', {...prevStorage, sLine})
-        //console.log("New local storage: ")
-        //console.log(JSON.stringify(JSON.parse(localStorage.getItem('example_information'))))
-
-        
-        var exampleNumber = 0;
-        if (searchParams.name === 'Example #1') {
-            exampleNumber = 0;
-        } else if (searchParams.name === 'Example #2') {
-            exampleNumber = 1;
-        }
-        
-
-        var prevStorage = localStorage.getItem('example_information_subject_line') ? JSON.parse(localStorage.getItem('example_information_subject_line')) : {}
-        //console.log(prevStorage)
-        localStorage.setItem('example_information_subject_line', JSON.stringify({ ...prevStorage, ...sLine}))
-
-        console.log(localStorage.getItem('example_information_subject_line'))
-
+        var prevBody = localStorage.getItem('example_information_body') ? JSON.parse(localStorage.getItem('example_information_body')) : {}
+        localStorage.setItem('example_information_body', JSON.stringify({ ...prevBody, ...body }))
+        setProcess(replacePlaceholdersWithJSX(localStorage.getItem("template"), setBody, exampleNumber, body, 12))
+        var prevSubjectLine = localStorage.getItem('example_information_subject_line') ? JSON.parse(localStorage.getItem('example_information_subject_line')) : {}
+        localStorage.setItem('example_information_subject_line', JSON.stringify({ ...prevSubjectLine, ...sLine}))
         setSubjectLine(replacePlaceholdersWithJSX(localStorage.getItem("subject_line"), setSLine, exampleNumber, sLine, 13))
-    }, [sLine])
-    //TESTING PURPOSES
+    }, [body, sLine])
 
     useEffect(() => {
-        var exampleNumber = 0;
-        if (searchParams.name === 'Example #1') {
-            exampleNumber = 0;
-        } else if (searchParams.name === 'Example #2') {
-            exampleNumber = 1;
-        }
-        //('changinge initial load to true')
-        initialLoad = true;
-        /*
-            You can rewrite this to load from localStorage the body and subjectLine
-        */
-        //console.log("Grabbing the past form information from memory:")
-        //console.log(JSON.parse(localStorage.getItem('example_information_body')))
-        console.log("trigger set to true")
-        triggerFromSetter = true
         setBody(JSON.parse(localStorage.getItem('example_information_body')))
         setSLine(JSON.parse(localStorage.getItem('example_information_subject_line')))
-
-        //console.log(JSON.parse(localStorage.getItem('example_information_body')))
-        //setProcess(replacePlaceholdersWithJSX(localStorage.getItem("template"), setBody, exampleNumber, body))
-        //setProcess(replacePlaceholdersWithJSX(localStorage.getItem("template"), setBody, exampleNumber, body))
         setStepName(localStorage.getItem("step_name"))
-        //setSubjectLine(replacePlaceholdersWithJSX(localStorage.getItem("subject_line"), setSLine, exampleNumber, sLine, 13))
     }, [searchParams.name]);
-
 
     return (
         <div className="min-w-full h-dvh" key={`${searchParams.name} main_app`}>
