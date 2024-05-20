@@ -8,6 +8,7 @@ import { useEffect } from 'react';
 //import { JSDOM } from 'jsdom';
 import JSXParser from 'jsx-parser'
 import React from 'react';
+import { useRouter } from 'next/navigation'
 
 function extractInputValuesFromJSX(element) {
     let values = [];
@@ -37,7 +38,6 @@ function extractInputValuesFromJSX(element) {
     return values;
 }
 
-
 function getUniqueRandom() {
     const min = 1;
     const max = 100000000; // Very high number to reduce the chance of collisions
@@ -62,12 +62,11 @@ function getUniqueRandom() {
     If you keep on the backend
         -> subjectLine array 
         -> body array
-
-
 */
 
 export default function Example({ searchParams }) {
 
+    const router = useRouter();
     const [process, setProcess] = useState('')
     const [stepName, setStepName] = useState('')
     const [subjectLine, setSubjectLine] = useState('')
@@ -75,16 +74,19 @@ export default function Example({ searchParams }) {
     //for input fields
     const [sLine, setSLine] = useState({})
     const [body, setBody] = useState({})
+    //const [exampleNumber, setExampleNumber] = useState(0)
 
-    var exNumber = -1;
+    //var exampleNumber = -1;
 
 
-    function replacePlaceholdersWithJSX(text, setObj) {
+    function replacePlaceholdersWithJSX(text, setObj, exampleNumber) {
         var startPoint = -1;
-        console.log('start point: ')
-        console.log(startPoint)
+        //console.log('start point: ')
+        //console.log(startPoint)
         // Split the entire text by new lines to handle each line as a paragraph
         const lines = text.split('\n');
+
+       
 
         // Process each line to replace placeholders and wrap in <p> tags
         console.log("Start")
@@ -98,41 +100,41 @@ export default function Example({ searchParams }) {
                     case '{{first_name}}':
                         startPoint += 1;
                         passRef = String(startPoint)
-                        return <input key={`${exNumber}-${rand}-${startPoint}`} value={body[`${exNumber}-${passRef}`]} placeholder="first name" type="text" onChange={(e) => {
+                        return <input key={`${exampleNumber}-${rand}-${startPoint}`} value={body[`${exampleNumber}-${passRef}`]} placeholder="first name" type="text" onChange={(e) => {
                             setObj(prevBody => {
-                                return { ...prevBody, [`${exNumber}-${passRef}`]: e.target.value };
+                                return { ...prevBody, [`${exampleNumber}-${passRef}`]: e.target.value };
                             })
                         }} style={{ fontSize: '12px' }} className="rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />;
                     case '{{last_name}}':
                         startPoint += 1;
                         passRef = String(startPoint)
-                        return <input key={`${exNumber}-${rand}-${startPoint}`} value={body[`${exNumber}-${passRef}`]} placeholder="last name" onChange={(e) => {
+                        return <input key={`${exampleNumber}-${rand}-${startPoint}`} value={body[`${exampleNumber}-${passRef}`]} placeholder="last name" onChange={(e) => {
                             setObj(prevBody => {
-                                return { ...prevBody, [`${exNumber}-${passRef}`]: e.target.value };
+                                return { ...prevBody, [`${exampleNumber}-${passRef}`]: e.target.value };
                             })
                         }} style={{ fontSize: '12px' }} className="rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />;
                     case '{{company_name}}':
                         startPoint += 1;
                         passRef = String(startPoint)
-                        return <input key={`${exNumber}-${rand}-${startPoint}`} value={body[`${exNumber}-${passRef}`]} placeholder="company name" onChange={(e) => {
+                        return <input key={`${exampleNumber}-${rand}-${startPoint}`} value={body[`${exampleNumber}-${passRef}`]} placeholder="company name" onChange={(e) => {
                             setObj(prevBody => {
-                                return { ...prevBody, [`${exNumber}-${passRef}`]: e.target.value };
+                                return { ...prevBody, [`${exampleNumber}-${passRef}`]: e.target.value };
                             })
                         }} style={{ fontSize: '12px' }} className="rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />;
                     case '{{full_name}}':
                         startPoint += 1;
                         passRef = String(startPoint)
-                        return <input key={`${exNumber}-${rand}-${startPoint}`} value={body[`${exNumber}-${passRef}`]} placeholder="full name" onChange={(e) => {
+                        return <input key={`${exampleNumber}-${rand}-${startPoint}`} value={body[`${exampleNumber}-${passRef}`]} placeholder="full name" onChange={(e) => {
                             setObj(prevBody => {
-                                return { ...prevBody, [`${exNumber}-${passRef}`]: e.target.value };
+                                return { ...prevBody, [`${exampleNumber}-${passRef}`]: e.target.value };
                             })
                         }} style={{ fontSize: '12px' }} className="rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />;
                     case '@ai_reference':
                         startPoint += 1;
                         passRef = String(startPoint)
-                        return <input rows={1} key={`${exNumber}-${rand}-${startPoint}`} value={body[`${exNumber}-${passRef}`]} placeholder="example linkedin reference" onChange={(e) => {
+                        return <input rows={1} key={`${exampleNumber}-${rand}-${startPoint}`} value={body[`${exampleNumber}-${passRef}`]} placeholder="example linkedin reference" onChange={(e) => {
                             setObj(prevBody => {
-                                return { ...prevBody, [`${exNumber}-${passRef}`]: e.target.value };
+                                return { ...prevBody, [`${exampleNumber}-${passRef}`]: e.target.value };
                             })
                         }} style={{ fontSize: '12px' }} className="w-2/3 rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />;
                     default:
@@ -160,21 +162,19 @@ export default function Example({ searchParams }) {
     //TESTING PURPOSES
 
     useEffect(() => {
-
+        var exampleNumber = 0;
         if (searchParams.name === 'Example #1') {
-            exNumber = 0
+            exampleNumber = 0;
         } else if (searchParams.name === 'Example #2') {
-            exNumber = 1
+            exampleNumber = 1;
         }
-
-        setProcess(replacePlaceholdersWithJSX(localStorage.getItem("template"), setBody))
+        setProcess(prevState => replacePlaceholdersWithJSX(localStorage.getItem("template"), setBody, exampleNumber))
         setStepName(localStorage.getItem("step_name"))
-        setSubjectLine(replacePlaceholdersWithJSX(localStorage.getItem("subject_line"), setSLine))
-
-    }, []);
+        setSubjectLine(prevState => replacePlaceholdersWithJSX(localStorage.getItem("subject_line"), setSLine, exampleNumber))
+    }, [router.pathname, router.query, searchParams.name]);
 
     return (
-        <div className="min-w-full h-dvh">
+        <div className="min-w-full h-dvh" key={`${searchParams.name} main_app`}>
             <Navbar url={"AI Sequences / New Sequence / Add Step / " + searchParams.name} />
             <div className="shadow-m rounded-lg border-2 p-4 border-black m-2">
                 <label className="block text-m leading-6 text-gray-900">
@@ -183,13 +183,13 @@ export default function Example({ searchParams }) {
                 <label className="block text-sm font-semibold m-2 text-gray-900">
                     Subject line
                 </label>
-                <div className="text-sm shadow-m rounded-lg border p-4 border-black m-2 h-1/2">
+                <div className="text-sm shadow-m rounded-lg border p-4 border-black m-2 h-1/2" key={`${searchParams.name} subject_line`}>
                     {subjectLine}
                 </div>
                 <label className="block text-sm ml-2 font-semibold mt-4 text-gray-900">
                     Body
                 </label>
-                <div className="text-sm shadow-m rounded-lg border p-4 border-black m-2 h-1/2">
+                <div className="text-sm shadow-m rounded-lg border p-4 border-black m-2 h-1/2" key={searchParams.name}>
                     {process}
                 </div>
                 <div className="flex flex-row-reverse pt-2">
