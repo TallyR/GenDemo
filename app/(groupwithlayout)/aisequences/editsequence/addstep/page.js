@@ -6,6 +6,10 @@ import { useImmerReducer } from 'use-immer';
 import { useState, useEffect } from 'react';
 import ErrorModal from "@/app/ui/ErrorModal";
 
+const MEMORY_KEY_SUBJECT_LINE = "example_information_subject_line"
+const MEMORY_KEY_TEMPLATE = "example_information_body"
+
+
 function reducer(draft, action) {
     switch (action.type) {
         case 'update_template': {
@@ -80,7 +84,7 @@ function reducer(draft, action) {
 
 export default function AddStep({ searchParams }) {
 
-    const initialState = { template: "", pointerPos: 0, subjectLine: "", subjectLinePointerPos: 0, active: -1, stepName: ""}
+    const initialState = { template: "", pointerPos: 0, subjectLine: "", subjectLinePointerPos: 0, active: -1, stepName: "" }
     const [state, dispatch] = useImmerReducer(reducer, initialState)
     const [stepName, setStepName] = useState('')
 
@@ -91,21 +95,21 @@ export default function AddStep({ searchParams }) {
         var tempTemplate = localStorage.getItem("template")
         var tempSubjectLinePointerPos = localStorage.getItem("subject_line_pos")
         var tempStepName = localStorage.getItem("step_name")
-        if(tempSubjectLine) {
+        if (tempSubjectLine) {
             dispatch({
                 type: "update_line",
                 subjectLine: tempSubjectLine,
                 subjectLinePointerPos: tempSubjectLinePointerPos
             })
         }
-        if(tempTemplate) {
+        if (tempTemplate) {
             dispatch({
                 type: "update_template",
                 template: tempTemplate,
                 pointerPos: tempPointerPos
             })
         }
-        if(tempStepName) {
+        if (tempStepName) {
             dispatch({
                 type: "update_step_name",
                 nextStepName: tempStepName
@@ -117,16 +121,16 @@ export default function AddStep({ searchParams }) {
         localStorage.setItem("active", state.active !== undefined ? state.active : -1)
         localStorage.setItem("pointer_pos", state.pointerPos !== undefined ? state.pointerPos : 0)
         localStorage.setItem("subject_line", state.subjectLine !== undefined ? state.subjectLine : "")
-        localStorage.setItem("template", state.template !== undefined ? state.template : "" )
+        localStorage.setItem("template", state.template !== undefined ? state.template : "")
         localStorage.setItem("subject_line_pos", state.subjectLinePointerPos !== undefined ? state.tempSubjectLinePointerPos : 0)
         localStorage.setItem("step_name", state.stepName !== undefined ? state.stepName : "")
-    }, [state]) 
+    }, [state])
 
     //error modal handling
     const [showErrorModal, setErrorModal] = useState(false)
     const [errorTitle, setErrorTitle] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-    
+
     return (
         <div className="min-w-full">
             <Navbar url="AI Sequences / Edit Sequence / Add Step" />
@@ -140,6 +144,7 @@ export default function AddStep({ searchParams }) {
                         <input
                             style={{ fontSize: '12px' }}
                             onClick={(e) => {
+                                console.log("START STATE!")
                                 e.preventDefault()
                                 dispatch({
                                     type: "update_line_pointer_pos",
@@ -191,15 +196,17 @@ export default function AddStep({ searchParams }) {
                                 type="button"
                                 href={{
                                     pathname: '/aisequences/editsequence/addstep/example',
-                                    query: { name: 'Example #1'},
+                                    query: { name: 'Example #1' },
                                 }}
                                 onClick={(e) => {
-                                    if(state.subjectLine === "" || state.template === "" || state.stepName === "") {
+                                    if (state.subjectLine === "" || state.template === "" || state.stepName === "") {
                                         e.preventDefault()
                                         setErrorTitle('Not all fields have been filled out!')
                                         setErrorMessage(`Please make sure to fill out the "Subject line", "Template", and "Step name"`)
                                         setErrorModal(true)
                                     }
+                                    localStorage.removeItem(MEMORY_KEY_SUBJECT_LINE)
+                                    localStorage.removeItem(MEMORY_KEY_TEMPLATE)
                                 }}
                                 className="whitespace-nowrap rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                             >
