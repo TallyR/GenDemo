@@ -571,5 +571,78 @@ export async function createNewSequence(newSequenceName) {
     }
 
     //re-direct to edit page
-    redirect(`/aisequences/newsequence?sequenceName=${encodeURIComponent(seqName)}`)
+    redirect(`/aisequences/editsequence?sequenceName=${encodeURIComponent(seqName)}`)
+}
+
+
+export async function grabSequenceData(sequenceName) {
+    noStore();
+    const { userId } = auth();
+    const mongodbClient = new MongoClient(process.env.MONGO_DB_CONNECTION_STRING, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    });
+    var timestamp = new Date().getTime();
+    const seqName = sequenceName + "@" + timestamp;
+
+    const query = {
+        userId: userId,
+        sequenceName: sequenceName
+    }
+    var grabbedObj = {}
+
+    //save sequence
+    try {
+        await mongodbClient.connect()
+        const database = mongodbClient.db('users')
+        const sequenceCollection = await database.collection('emailSequences')
+        grabbedObj = await sequenceCollection.findOne(query);
+        await mongodbClient.close()
+    } catch(error) {
+
+    }
+
+    return JSON.parse(JSON.stringify(grabbedObj));
+}
+
+export async function saveStep(sequenceName, stepName, stepTemplate, stepExampleSubjectLines, stepExampleBodys) {
+    noStore();
+    const { userId } = auth();
+    const mongodbClient = new MongoClient(process.env.MONGO_DB_CONNECTION_STRING, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    });
+    var timestamp = new Date().getTime();
+    const seqName = sequenceName + "@" + timestamp;
+
+    const query = {
+        userId: userId,
+        sequenceName: sequenceName
+    }
+
+    try {
+        await mongodbClient.connect()
+        const database = mongodbClient.db('users')
+        const sequenceCollection = await database.collection('emailSequences')
+
+        //grab and update
+        var grabbedObj = await sequenceCollection.findOne(query);
+        var newStepArray = grabbedObj.steps === null ? [] : grabbedObj.steps
+        newStepArray.push({
+            step_name: stepName, 
+            step_template: stepTemplate, 
+            step_example_subject_lines: stepExampleSubjectLines,
+            step_example_bodys: stepExampleBodys
+        })
+        const updateDoc = {
+            $set: {
+                steps: newStepArray
+            },
+        }
+        const updatedUser = await sequenceCollection.updateOne(query, updateDoc);
+        await mongodbClient.close()
+    } catch(error) {
+
+    }
+    redirect(`/aisequences/editsequence?sequenceName=${encodeURIComponent(sequenceName)}`)
 }

@@ -107,6 +107,11 @@ export default function Example({ searchParams }) {
         var prevSubjectLine = localStorage.getItem('example_information_subject_line') ? JSON.parse(localStorage.getItem('example_information_subject_line')) : {}
         localStorage.setItem('example_information_subject_line', JSON.stringify({ ...prevSubjectLine, ...sLine}))
         setSubjectLine(replacePlaceholdersWithJSX(localStorage.getItem("subject_line"), setSLine, exampleNumber, sLine, 13))
+
+        console.log("Body status:")
+        console.log(localStorage.getItem('example_information_body'))
+        console.log("Subject line status:")
+        console.log(localStorage.getItem('example_information_subject_line'))
     }, [body, sLine])
 
     useEffect(() => {
@@ -117,7 +122,7 @@ export default function Example({ searchParams }) {
 
     return (
         <div className="min-w-full h-dvh" key={`${searchParams.name} main_app`}>
-            <Navbar url={"AI Sequences / New Sequence / Add Step / " + searchParams.name} />
+            <Navbar url={"AI Sequences / Edit Sequence / Add Step / " + searchParams.name} />
             <div className="shadow-m rounded-lg border-2 p-4 border-black m-2">
                 <label className="block text-m leading-6 text-gray-900">
                     Fill in a "{stepName}" example to teach Tally
@@ -138,7 +143,7 @@ export default function Example({ searchParams }) {
                     <Link
                         type="button"
                         href={{
-                            pathname: searchParams.name !== 'Example #2' ? '/aisequences/newsequence/addstep/example' : '/aisequences/newsequence/addstep/testtemplate',
+                            pathname: searchParams.name !== 'Example #2' ? '/aisequences/editsequence/addstep/example' : '/aisequences/editsequence/addstep/testtemplate',
                             query: { name: 'Example #2' },
                         }}
                         className="whitespace-nowrap rounded-lg bg-indigo-600 px-6 py-3 text-m text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"

@@ -4,8 +4,7 @@ import Navbar from "@/app/ui/Navbar";
 import Link from 'next/link';
 import { useImmerReducer } from 'use-immer';
 import { useState, useEffect } from 'react';
-
-
+import ErrorModal from "@/app/ui/ErrorModal";
 
 function reducer(draft, action) {
     switch (action.type) {
@@ -122,11 +121,16 @@ export default function AddStep({ searchParams }) {
         localStorage.setItem("subject_line_pos", state.subjectLinePointerPos !== undefined ? state.tempSubjectLinePointerPos : 0)
         localStorage.setItem("step_name", state.stepName !== undefined ? state.stepName : "")
     }, [state]) 
+
+    //error modal handling
+    const [showErrorModal, setErrorModal] = useState(false)
+    const [errorTitle, setErrorTitle] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
     
     return (
         <div className="min-w-full">
-            <Navbar url="AI Sequences / New Sequence / Add Step" />
-
+            <Navbar url="AI Sequences / Edit Sequence / Add Step" />
+            <ErrorModal onExit={setErrorModal} showSelf={showErrorModal} errorTitle={errorTitle} errorMessage={errorMessage} />
             <div className="flex flex-row">
                 <div className="shadow-m rounded-lg border-2 border-black mb-20 p-2 m-4 w-1/2">
                     <label htmlFor="comment" className="block text-sm font-medium leading-6 ml-2 text-gray-900 ">
@@ -186,8 +190,16 @@ export default function AddStep({ searchParams }) {
                             <Link
                                 type="button"
                                 href={{
-                                    pathname: '/aisequences/newsequence/addstep/example',
+                                    pathname: '/aisequences/editsequence/addstep/example',
                                     query: { name: 'Example #1'},
+                                }}
+                                onClick={(e) => {
+                                    if(state.subjectLine === "" || state.template === "" || state.stepName === "") {
+                                        e.preventDefault()
+                                        setErrorTitle('Not all fields have been filled out!')
+                                        setErrorMessage(`Please make sure to fill out the "Subject line", "Template", and "Step name"`)
+                                        setErrorModal(true)
+                                    }
                                 }}
                                 className="whitespace-nowrap rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                             >

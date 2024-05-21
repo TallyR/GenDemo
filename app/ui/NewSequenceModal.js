@@ -4,7 +4,6 @@ import { Dialog, Transition } from '@headlessui/react'
 import { ExclamationTriangleIcon, CheckBadgeIcon, BoltIcon } from '@heroicons/react/24/outline'
 import { Fragment, useState, useEffect } from 'react';
 import clsx from 'clsx';
-import Link from 'next/link';
 import { createNewSequence } from '@/app/lib/actions';
 import { RingLoader } from "react-spinners"
 
