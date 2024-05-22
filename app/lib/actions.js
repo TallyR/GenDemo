@@ -223,15 +223,15 @@ export async function disconnectGmail() {
             refresh_token: foundUser.gmailRefreshToken,
         });
         //refreshed accessToken + revoke
-        await oauth2Client.refreshAccessToken(); 
+        await oauth2Client.refreshAccessToken();
         await oauth2Client.revokeCredentials();
-        
+
 
         //now remove from user's profile
         var updatedUser = await userCollection.updateOne(query, {
             $set: {
                 gmailAccessToken: 'NULL',
-                gmailRefreshToken: 'NULL', 
+                gmailRefreshToken: 'NULL',
                 gmailAlias: 'NULL'
             }
         });
@@ -506,13 +506,13 @@ export async function processSequences(prevState, formData) {
     var retObj = { parsedArray: null, error: null }
 
     //check if both fields are full
-    if(formData.get('sequence_name') == '') {
+    if (formData.get('sequence_name') == '') {
         console.log('HERE!')
         retObj.error = 'NO_SEQUENCE_NAME'
         return retObj;
     }
 
-    if(formData.get('subject_line') == '') {
+    if (formData.get('subject_line') == '') {
         retObj.error = 'NO_SUBJECT_LINE'
         return retObj;
     }
@@ -530,7 +530,7 @@ export async function processSequences(prevState, formData) {
         const database = mongodbClient.db('users')
         const sequenceCollection = await database.collection('emailSequences')
         const savedEmailSequence = {
-            userId: userId, 
+            userId: userId,
             sequenceName: formData.get('sequence_name') + "@" + timestamp,
             steps: [] //need to update this later with the state stuff
         }
@@ -560,13 +560,13 @@ export async function createNewSequence(newSequenceName) {
         const database = mongodbClient.db('users')
         const sequenceCollection = await database.collection('emailSequences')
         const savedEmailSequence = {
-            userId: userId, 
+            userId: userId,
             sequenceName: seqName,
             steps: [] //need to update this later with the state stuff
         }
         await sequenceCollection.insertOne(savedEmailSequence)
         await mongodbClient.close()
-    } catch(error) {
+    } catch (error) {
 
     }
 
@@ -598,14 +598,19 @@ export async function grabSequenceData(sequenceName) {
         const sequenceCollection = await database.collection('emailSequences')
         grabbedObj = await sequenceCollection.findOne(query);
         await mongodbClient.close()
-    } catch(error) {
+    } catch (error) {
 
     }
 
     return JSON.parse(JSON.stringify(grabbedObj));
 }
 
-export async function saveStep(sequenceName, stepName, stepTemplate, stepExampleSubjectLines, stepExampleBodys) {
+export async function saveStep(sequenceName, stepName, stepTemplate, stepExampleSubjectLines, stepExampleBodys, subjectLine, position = -1) {
+    console.log("Position:")
+    console.log(position)
+    console.log("Subject Line:")
+    console.log(subjectLine)
+
     noStore();
     const { userId } = auth();
     const mongodbClient = new MongoClient(process.env.MONGO_DB_CONNECTION_STRING, {
@@ -620,29 +625,59 @@ export async function saveStep(sequenceName, stepName, stepTemplate, stepExample
         sequenceName: sequenceName
     }
 
+    await mongodbClient.connect()
+    const database = mongodbClient.db('users')
+    const sequenceCollection = await database.collection('emailSequences')
+    console.log("sdjfkhsdf")
+    console.log(position)
+
     try {
-        await mongodbClient.connect()
-        const database = mongodbClient.db('users')
-        const sequenceCollection = await database.collection('emailSequences')
-
-        //grab and update
-        var grabbedObj = await sequenceCollection.findOne(query);
-        var newStepArray = grabbedObj.steps === null ? [] : grabbedObj.steps
-        newStepArray.push({
-            step_name: stepName, 
-            step_template: stepTemplate, 
-            step_example_subject_lines: stepExampleSubjectLines,
-            step_example_bodys: stepExampleBodys
-        })
-        const updateDoc = {
-            $set: {
-                steps: newStepArray
-            },
+        if (position == -1) {
+            //grab and update
+            var grabbedObj = await sequenceCollection.findOne(query);
+            var newStepArray = grabbedObj.steps === null ? [] : grabbedObj.steps
+            newStepArray.push({
+                step_name: stepName,
+                step_subject_line: subjectLine,
+                step_template: stepTemplate,
+                step_example_subject_lines: stepExampleSubjectLines,
+                step_example_bodys: stepExampleBodys,
+            })
+            const updateDoc = {
+                $set: {
+                    steps: newStepArray
+                },
+            }
+            const updatedUser = await sequenceCollection.updateOne(query, updateDoc);
+            await mongodbClient.close()
+        } else {
+            //editing step
+            console.log("EDITING")
+            var grabbedObj = await sequenceCollection.findOne(query);
+            grabbedObj = grabbedObj.steps.map((trav, index) => {
+                if (index != position) {
+                    return trav
+                }
+                return ({
+                    step_name: stepName,
+                    step_subject_line: subjectLine,
+                    step_template: stepTemplate,
+                    step_example_subject_lines: stepExampleSubjectLines,
+                    step_example_bodys: stepExampleBodys,
+                })
+            })
+            const updateDoc = {
+                $set: {
+                    steps: grabbedObj
+                },
+            }
+            const updatedUser = await sequenceCollection.updateOne(query, updateDoc);
+            await mongodbClient.close()
         }
-        const updatedUser = await sequenceCollection.updateOne(query, updateDoc);
-        await mongodbClient.close()
-    } catch(error) {
-
+    }
+    catch (error) {
+        console.log(error)
+        return; //dont redirect
     }
     redirect(`/aisequences/editsequence?sequenceName=${encodeURIComponent(sequenceName)}`)
 }

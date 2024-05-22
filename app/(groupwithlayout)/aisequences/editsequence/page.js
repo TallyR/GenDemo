@@ -269,20 +269,26 @@ export default function NewSequence({ searchParams }) {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {processSteps.map(trav => {
+                                                {processSteps.map((trav, index) => {
                                                     return (
                                                         <tr className="border rounded-lg" key={trav.step_name}>
                                                             <td scope="row" className="w-1/2 px-3 py-3 font-small text">
                                                                 <div className="pl-1">{trav.step_name}</div>
                                                             </td>
                                                             <td className="w-1/4 px-3 py-2">
-                                                                <div className="pl-1">{Object.keys(trav.step_example_subject_lines).length}</div>
+                                                                <div className="pl-1">{index+1}</div>
                                                             </td>
                                                             <td className="w-1/4 px-3 py-2">
                                                                 <div className="flex">
                                                                     <Link
                                                                         type="button"
-                                                                        href="/aisequences/editsequence"
+                                                                        href={{ pathname: "/aisequences/editsequence/addstep", query: { editStep: true, position: index } }}
+                                                                        onClick={(e) => {
+                                                                            console.log("clicked")
+                                                                            localStorage.setItem("template", trav.step_template)
+                                                                            localStorage.setItem("step_name", trav.step_name)
+                                                                            localStorage.setItem("subject_line", trav.step_subject_line)
+                                                                        }}
                                                                         className="ml-2 whitespace-nowrap rounded-lg bg-indigo-600 px-2 py-1 text-xs text-white shadow-sm justify-center text-center hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                                                     >
                                                                         Edit

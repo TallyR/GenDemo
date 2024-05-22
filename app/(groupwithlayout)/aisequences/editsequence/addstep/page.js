@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useImmerReducer } from 'use-immer';
 import { useState, useEffect } from 'react';
 import ErrorModal from "@/app/ui/ErrorModal";
+import clsx from 'clsx';
 
 const MEMORY_KEY_SUBJECT_LINE = "example_information_subject_line"
 const MEMORY_KEY_TEMPLATE = "example_information_body"
@@ -131,9 +132,16 @@ export default function AddStep({ searchParams }) {
     const [errorTitle, setErrorTitle] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
 
+    //calculating if edit step
+    var editStep = false;
+    if (searchParams.editStep === "true") {
+        editStep = true
+    }
+    console.log(typeof searchParams.editStep)
+
     return (
         <div className="min-w-full">
-            <Navbar url="AI Sequences / Edit Sequence / Add Step" />
+            <Navbar url={`AI Sequences / Edit Sequence / ${!editStep ? "Add" : "Edit"} Step`} />
             <ErrorModal onExit={setErrorModal} showSelf={showErrorModal} errorTitle={errorTitle} errorMessage={errorMessage} />
             <div className="flex flex-row">
                 <div className="shadow-m rounded-lg border-2 border-black mb-20 p-2 m-4 w-1/2">
@@ -196,7 +204,7 @@ export default function AddStep({ searchParams }) {
                                 type="button"
                                 href={{
                                     pathname: '/aisequences/editsequence/addstep/example',
-                                    query: { name: 'Example #1' },
+                                    query: { name: 'Example #1', editStep: searchParams.editStep, position: searchParams.position},
                                 }}
                                 onClick={(e) => {
                                     if (state.subjectLine === "" || state.template === "" || state.stepName === "") {
@@ -231,9 +239,14 @@ export default function AddStep({ searchParams }) {
                                         nextStepName: e.target.value
                                     })
                                 }}
-                                className="block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                //edited to be gray at the last
+                                className={clsx((editStep)
+                                    ? "block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 bg-slate-200" :
+                                    "block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                )}
                                 placeholder="Introduction email"
                                 value={state.stepName}
+                                disabled={editStep}
                             />
                         </div>
                     </div>

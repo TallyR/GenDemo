@@ -71,6 +71,11 @@ function hasEmptyStringValue(obj, targetKeys, exampleNumber) {
 var trackOfFields = { template: 0, subjectLine: 0 }
 
 export default function Example({ searchParams }) {
+    //calculating if edit step
+    var editStep = false;
+    if (searchParams.editStep === "true") {
+        editStep = true
+    }
 
     const [sLine, setSLine] = useState({})
     const [body, setBody] = useState({})
@@ -224,7 +229,7 @@ export default function Example({ searchParams }) {
 
     return (
         <div className="min-w-full h-dvh" key={`${searchParams.name} main_app`}>
-            <Navbar url={"AI Sequences / Edit Sequence / Add Step / " + searchParams.name} />
+            <Navbar url={`AI Sequences / Edit Sequence / ${!editStep ? "Add" : "Edit"} Step / ${searchParams.name}`} />
             <ErrorModal onExit={setErrorModal} showSelf={showErrorModal} errorTitle={errorTitle} errorMessage={errorMessage} />
             <div className="shadow-m rounded-lg border-2 p-4 border-black m-2">
                 <label className="block text-m leading-6 text-gray-900">
@@ -247,7 +252,7 @@ export default function Example({ searchParams }) {
                         type="button"
                         href={{
                             pathname: searchParams.name !== 'Example #2' ? '/aisequences/editsequence/addstep/example' : '/aisequences/editsequence/addstep/testtemplate',
-                            query: { name: 'Example #2' },
+                            query: { name: 'Example #2', editStep: searchParams.editStep, position: searchParams.position },
                         }}
                         onClick={(e) => {
                             var subFields = JSON.parse(localStorage.getItem(MEMORY_KEY_SUBJECT_LINE));
@@ -258,7 +263,9 @@ export default function Example({ searchParams }) {
                             } else if (searchParams.name === 'Example #2') {
                                 exampleNumber = 1;
                             }
-
+                            //e.preventDefault()
+                            //console.log(localStorage.getItem("subject_line")) 
+                            
 
                             console.log("Subject line targeted fields " + trackOfFields.subjectLine)
                             console.log("here")
@@ -272,15 +279,15 @@ export default function Example({ searchParams }) {
                             console.log(test2)
                             console.log(false || false)
 
+
                             if (hasEmptyStringValue(subFields, trackOfFields.subjectLine, exampleNumber) === true || hasEmptyStringValue(bodyFields, trackOfFields.template, exampleNumber) === true) {
                                 e.preventDefault();
                                 console.log("Not all fields are full!")
                                 setErrorTitle("Not all fields completed")
                                 setErrorMessage("Please fill in all blanks, Tally is trying to learn how you write :)")
                                 setErrorModal(true)
-                            } else {
-                                //e.preventDefault()
                             }
+                            
                         }}
                         className="whitespace-nowrap rounded-lg bg-indigo-600 px-6 py-3 text-m text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                     >
