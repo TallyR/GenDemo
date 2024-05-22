@@ -42,8 +42,7 @@ export default function TestTemplate({ searchParams }) {
                         onClick={async (e) => {
                             e.preventDefault()
                             console.log("CALLING HERE")
-                            console.log(typeof localStorage.getItem("subject_line"))
-                            console.log(localStorage.getItem("subject_line"))
+                            console.log(localStorage.getItem('sequence_name'));
                             if (searchParams.position == '') {
                                 await saveStep(localStorage.getItem('sequence_name'), localStorage.getItem("step_name"), localStorage.getItem("template"), JSON.parse(localStorage.getItem("example_information_subject_line")), JSON.parse(localStorage.getItem("example_information_body")), localStorage.getItem("subject_line"))
                             }

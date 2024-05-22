@@ -6,6 +6,7 @@ import { useImmerReducer } from 'use-immer';
 import { useState, useEffect } from 'react';
 import ErrorModal from "@/app/ui/ErrorModal";
 import clsx from 'clsx';
+import { useRouter } from 'next/router';
 
 const MEMORY_KEY_SUBJECT_LINE = "example_information_subject_line"
 const MEMORY_KEY_TEMPLATE = "example_information_body"
@@ -137,7 +138,6 @@ export default function AddStep({ searchParams }) {
     if (searchParams.editStep === "true") {
         editStep = true
     }
-    console.log(typeof searchParams.editStep)
 
     return (
         <div className="min-w-full">

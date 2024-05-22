@@ -574,7 +574,6 @@ export async function createNewSequence(newSequenceName) {
     redirect(`/aisequences/editsequence?sequenceName=${encodeURIComponent(seqName)}`)
 }
 
-
 export async function grabSequenceData(sequenceName) {
     noStore();
     const { userId } = auth();
@@ -618,7 +617,6 @@ export async function saveStep(sequenceName, stepName, stepTemplate, stepExample
         useUnifiedTopology: true,
     });
     var timestamp = new Date().getTime();
-    const seqName = sequenceName + "@" + timestamp;
 
     const query = {
         userId: userId,
@@ -674,6 +672,45 @@ export async function saveStep(sequenceName, stepName, stepTemplate, stepExample
             const updatedUser = await sequenceCollection.updateOne(query, updateDoc);
             await mongodbClient.close()
         }
+    }
+    catch (error) {
+        console.log(error)
+        return; //dont redirect
+    }
+    redirect(`/aisequences/editsequence?sequenceName=${encodeURIComponent(sequenceName)}`)
+}
+
+export async function removeStep(sequenceName, stepPosition) {
+    noStore();
+    const { userId } = auth();
+    const mongodbClient = new MongoClient(process.env.MONGO_DB_CONNECTION_STRING, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    });
+    const query = {
+        userId: userId,
+        sequenceName: sequenceName
+    }
+    await mongodbClient.connect()
+    const database = mongodbClient.db('users')
+    const sequenceCollection = await database.collection('emailSequences')
+    try {
+        //removing step
+        console.log("EDITING")
+        var grabbedObj = await sequenceCollection.findOne(query);
+        grabbedObj = grabbedObj.steps.filter((trav, index) => {
+            if (index != stepPosition) {
+                return true
+            } 
+            return false
+        })
+        const updateDoc = {
+            $set: {
+                steps: grabbedObj
+            },
+        }
+        const updatedUser = await sequenceCollection.updateOne(query, updateDoc);
+        await mongodbClient.close()
     }
     catch (error) {
         console.log(error)

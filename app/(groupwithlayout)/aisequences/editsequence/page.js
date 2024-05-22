@@ -9,8 +9,9 @@ import { useFormState } from 'react-dom';
 import ErrorModal from "@/app/ui/ErrorModal";
 import { useEffect } from 'react';
 import { useState } from 'react';
-import { grabSequenceData } from "@/app/lib/actions"
+import { grabSequenceData, removeStep } from "@/app/lib/actions"
 import { RingLoader } from "react-spinners"
+import { useRouter } from 'next/navigation';
 
 const initialState = { sequenceName: "", subjectLine: "" }
 
@@ -189,6 +190,9 @@ export default function NewSequence({ searchParams }) {
     const [sequenceName, setSequenceName] = useState('')
     const [processSteps, setProcessedSteps] = useState([])
     const [processingRequest, setProcessRequest] = useState(true)
+
+    const router = useRouter();
+
     useEffect(() => {
         const grab = localStorage.getItem('sequence_name')
         if (localStorage.getItem('sequence_name')) {
@@ -293,13 +297,16 @@ export default function NewSequence({ searchParams }) {
                                                                     >
                                                                         Edit
                                                                     </Link>
-                                                                    <Link
+                                                                    <button
                                                                         type="button"
-                                                                        href="/aisequences/editsequence"
+                                                                        onClick={async (e) => {
+                                                                            await removeStep(searchParams.sequenceName, index)
+                                                                            location.reload()
+                                                                        }}
                                                                         className="ml-2 whitespace-nowrap rounded-lg bg-red-600 px-2 py-1 text-xs text-white shadow-sm justify-center text-center hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
                                                                     >
                                                                         Remove
-                                                                    </Link>
+                                                                    </button>
                                                                 </div>
                                                             </td>
                                                         </tr>
