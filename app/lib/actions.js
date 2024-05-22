@@ -718,3 +718,34 @@ export async function removeStep(sequenceName, stepPosition) {
     }
     redirect(`/aisequences/editsequence?sequenceName=${encodeURIComponent(sequenceName)}`)
 }
+
+
+export async function grabEmailSequences() {
+    noStore();
+    const { userId } = auth();
+    const mongodbClient = new MongoClient(process.env.MONGO_DB_CONNECTION_STRING, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    });
+    const query = {
+        userId: userId,
+    }
+    await mongodbClient.connect()
+    const database = await mongodbClient.db('users')
+    const sequenceCollection = await database.collection('emailSequences')
+    try {
+        var allUserSequences = await sequenceCollection.find(query);
+        var allSequences = await allUserSequences.toArray()
+        allSequences = allSequences.map((e) => {console.log(e) 
+            return ({sequenceName: e.sequenceName, size: e.steps.length})})
+        console.log(allSequences)
+        await mongodbClient.close()
+        return allSequences;
+    }
+    catch (error) {
+        console.log("error")
+        console.log(error)
+        await mongodbClient.close()
+        return; //dont redirect
+    }
+}

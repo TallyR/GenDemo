@@ -9,25 +9,61 @@ import { MagnifyingGlassIcon } from '@heroicons/react/24/solid'
 import SequencesTable from "@/app/ui/SequencesTable";
 import Toggle from "@/app/ui/Toggle";
 import NewSequenceModal from "@/app/ui/NewSequenceModal";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { grabEmailSequences } from '@/app/lib/actions'
+
+//this can be a server component! (EVENTUALLY)
 
 export default function CustomPrompt() {
 
+    //error modal handling
+    const [showErrorModal, setErrorModal] = useState(false)
+    const [errorTitle, setErrorTitle] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+    const [jsxEntries, setEntries] = useState([])
+
+    useEffect(() => {
+        const grab = async () => {
+            const data = await grabEmailSequences()
+            
+            
+            const convertToJson = data.map(trav => {
+                return (
+                    { sequenceTitle: trav.sequenceName, length: trav.length }
+                )
+            })
+            console.log("SMITHER")
+            console.log(data)
+
+            //return;
+
+            setEntries(data)
+            
+        };
+        grab()
+    }, [])
+
+
     //this will eventually be grabbed from the backend
+    /*
     const processedJobs = [
-    { sequenceTitle: "InitialOeeeeutreachforVps23423", length: "6" },
-    { sequenceTitle: "SecondReach234324", length: "12" },
-    { sequenceTitle: "InitialOutreachforVps23432", length: "6" },
-    { sequenceTitle: "SecondReach345435", length: "12" },
-    { sequenceTitle: "InitialOutreachforVps234324", length: "6" },
-    { sequenceTitle: "SecondReach23432", length: "12" },
-    { sequenceTitle: "InitialOutreachforVps23432", length: "6" },
-    { sequenceTitle: "SecondReach234324", length: "12" },]
+        { sequenceTitle: "InitialOeeeeutreachforVps23423", length: "6" },
+        { sequenceTitle: "SecondReach234324", length: "12" },
+        { sequenceTitle: "InitialOutreachforVps23432", length: "6" },
+        { sequenceTitle: "SecondReach345435", length: "12" },
+        { sequenceTitle: "InitialOutreachforVps234324", length: "6" },
+        { sequenceTitle: "SecondReach23432", length: "12" },
+        { sequenceTitle: "InitialOutreachforVps23432", length: "6" },
+        { sequenceTitle: "SecondReach234324", length: "12" },]
 
     console.log(processedJobs);
+    */
 
     //should probably move this to ProspectTable.js
     //  {trav.jobState}
+
+    /*
+
     const jsxEntries = processedJobs.map(trav => {
         return (
             <tr className="border rounded-lg" key={trav.sequenceTitle}>
@@ -49,17 +85,13 @@ export default function CustomPrompt() {
             </tr>
         )
     })
-
-        //error modal handling
-        const [showErrorModal, setErrorModal] = useState(false)
-        const [errorTitle, setErrorTitle] = useState('');
-        const [errorMessage, setErrorMessage] = useState('');
+    */
 
     return (
         <div className="min-w-full">
             <Navbar url="Your Sequences" />
-            <NewSequenceModal onExit={setErrorModal} showSelf={showErrorModal} errorTitle={errorTitle} errorMessage={errorMessage}/>
-            <SequencesTable jsxEntries={jsxEntries} triggerModal={setErrorModal}/>
+            <NewSequenceModal onExit={setErrorModal} showSelf={showErrorModal} errorTitle={errorTitle} errorMessage={errorMessage} />
+            <SequencesTable jsxEntries={jsxEntries} triggerModal={setErrorModal} />
         </div>
     );
 }

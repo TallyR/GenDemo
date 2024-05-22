@@ -20,17 +20,36 @@ function isSubset(str1, str2) {
 }
 
 export default function ProspectTable({ jsxEntries, triggerModal }) {
-
     const [searchTerm, setSearchTerm] = useState('');
-    var filteredJsxEntries = jsxEntries.filter(trav => {
-        return isSubset(trav.key, searchTerm)
+    jsxEntries = jsxEntries.filter(trav => {
+        return isSubset(trav.sequenceName, searchTerm)
+    })
+    
+    console.log("I HATE JAVASCRIPT")
+    console.log(jsxEntries)
+    var filteredJsxEntries = jsxEntries.map(trav => {
+        return (
+            <tr className="border rounded-lg" key={trav.sequenceName}>
+                <td scope="row" className="w-1/2 px-5 py-2 font-medium">
+                    <div className="pl-1">{trav.sequenceName}</div>
+                </td>
+                <td className="w-1/4 px-5 py-2">
+                    <div className="pl-1">{trav.size}</div>
+                </td>
+                <td className="w-1/4 px-5 py-2">
+                    <Link
+                        type="button"
+                        disabled={false}
+                        href={{ pathname: "/aisequences/editsequence", query: { sequenceName: trav.sequenceName } }}
+                        className="flex items-center justify-center rounded-md bg-indigo-600 px-6 py-2.5 w-1/2 text-sm text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                        >
+                        Edit
+                    </Link>
+                </td>
+            </tr>
+        )
     })
 
-    /*
-        This could def live on the server
-    */
-
-    // const jsxTableEntries = jobData.map(jobData)
     return (
         <div className="mb-4">
             <div className="pl-16 pt-8 pr-2 flex">
