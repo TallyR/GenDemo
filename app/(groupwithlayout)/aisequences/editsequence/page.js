@@ -103,6 +103,7 @@ export default function NewSequence({ searchParams }) {
     const initialState = { parsedArray: null, error: null };
     const [stateForm, dispatchForm] = useFormState(processSequences, initialState);
     const [state, dispatch] = useImmerReducer(reducer, initialState)
+    const [goal, setGoal] = useState('')
 
 
     console.log('here')
@@ -210,6 +211,7 @@ export default function NewSequence({ searchParams }) {
             console.log(e.steps)
             setProcessedSteps(e.steps)
             setProcessRequest(false)
+            setGoal(e.goal)
         })
     }, [])
 
@@ -232,8 +234,14 @@ export default function NewSequence({ searchParams }) {
                             <label className="block text-sm font-medium leading-6 text-gray-900 mb-2">
                                 Sequence name
                             </label>
-                            <label className="text-lg pl-1 font-semibold">
+                            <label className="text-lg font-semibold">
                                 {extractStringBeforeLastAt(sequenceName)}
+                            </label>
+                            <label className="block text-sm font-medium text-gray-900 mb-2 mt-2">
+                                Goal
+                            </label>
+                            <label className="text-m font-medium">
+                            {goal}
                             </label>
                             <div className="flex mt-2 items-center">
                                 <label className="block text-sm font-medium leading-6 text-gray-900">

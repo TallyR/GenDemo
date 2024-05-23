@@ -544,7 +544,7 @@ export async function processSequences(prevState, formData) {
     return retObj;
 }
 
-export async function createNewSequence(newSequenceName) {
+export async function createNewSequence(newSequenceName, goal) {
     noStore();
     const { userId } = auth();
     const mongodbClient = new MongoClient(process.env.MONGO_DB_CONNECTION_STRING, {
@@ -562,6 +562,7 @@ export async function createNewSequence(newSequenceName) {
         const savedEmailSequence = {
             userId: userId,
             sequenceName: seqName,
+            goal: goal,
             steps: [] //need to update this later with the state stuff
         }
         await sequenceCollection.insertOne(savedEmailSequence)
