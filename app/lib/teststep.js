@@ -81,7 +81,7 @@ async function generateEmail(linkedinUrl, stepData) {
 
     var tt = generatePrompt(stepData.goal, parsedLinked.linkedinData, examplesPopulated.subject_line_one + "\n" + examplesPopulated.body_one, examplesPopulated.subject_line_two + "\n" + examplesPopulated.body_two, parsedLinked.subject_line, parsedLinked.body)
     return tt;
-    
+
 }
 
 //generate prompt for openai
@@ -152,20 +152,26 @@ function generatePrompt(sellingDescription, linkedinData, exampleEmailOne, examp
 
 //to generate the test email
 export async function testEmail(linkedinUrl, stepData) {
-    //global variables
-    console.log(process)
-    const openai = new OpenAI({ apiKey: process.env.OPEN_AI_KEY });
-    const plz = await generateEmail(linkedinUrl, stepData);
-
-    const res = await openai.chat.completions.create({
-        messages: [{ role: "system", content: plz }],
-        top_p: 0.7,
-        temperature: 0.7,
-        model: "gpt-4",
-        n: 1,
-    });
-
-    console.log(res.choices[0].message.content)
-
-    return JSON.parse(res.choices[0].message.content)
+    try {
+        //global variables
+        console.log(process)
+        const openai = new OpenAI({ apiKey: process.env.OPEN_AI_KEY });
+        const plz = await generateEmail(linkedinUrl, stepData);
+        const res = await openai.chat.completions.create({
+            messages: [{ role: "system", content: plz }],
+            top_p: 0.7,
+            temperature: 0.7,
+            model: "gpt-4",
+            n: 1,
+        });
+        console.log(res.choices[0].message.content)
+        return {
+            message: JSON.parse(res.choices[0].message.content), 
+            error: false
+        }
+    } catch (error) {
+        return {
+            error: true
+        }
+    }
 }

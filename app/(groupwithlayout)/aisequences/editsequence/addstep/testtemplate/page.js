@@ -1,12 +1,11 @@
 'use client';
 
 import Navbar from "@/app/ui/Navbar";
-import Link from 'next/link';
-import { useImmerReducer } from 'use-immer';
 import { useState, useEffect } from 'react';
 import { saveStep } from '@/app/lib/actions'
 import { testEmail } from '@/app/lib/teststep'
 import { RingLoader } from "react-spinners"
+import ErrorModal from "@/app/ui/ErrorModal.js"
 
 function wrapTextWithParagraphs(text) {
     // Normalize the text to handle back-to-back newlines by replacing them with a placeholder newline plus double space
@@ -27,6 +26,11 @@ function wrapTextWithParagraphs(text) {
     return <div>{wrappedText}</div>; // Using <div> instead of <p> for proper nesting
 }
 
+function isLinkedInProfile(url) {
+    const pattern = /^https?:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9\-_]+\/?$/;
+    return pattern.test(url);
+}
+
 export default function TestTemplate({ searchParams }) {
     //calculating if edit step
     var editStep = false;
@@ -39,6 +43,11 @@ export default function TestTemplate({ searchParams }) {
     const [linkedinUrl, setLinkedinURl] = useState('')
     const [loading, setLoading] = useState(false)
 
+    //error modal handling
+    const [showErrorModal, setErrorModal] = useState(false)
+    const [errorTitle, setErrorTitle] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+
     useEffect(() => {
         setStepName(localStorage.getItem('step_name'))
     }, []);
@@ -46,6 +55,7 @@ export default function TestTemplate({ searchParams }) {
     return (
         <div className="min-w-full h-dvh">
             <Navbar url={`AI Sequences / Edit Sequence / ${editStep ? "Edit" : "Add"} Step / Test`} />
+            <ErrorModal onExit={setErrorModal} showSelf={showErrorModal} errorTitle={errorTitle} errorMessage={errorMessage} />
             <div className="p-4">
                 <label className="block text-xl font-medium leading-6 text-gray-900">
                     {`Paste a Linkedin URL to test your “${stepName}” step`}
@@ -63,8 +73,13 @@ export default function TestTemplate({ searchParams }) {
                         type="button"
                         className="ml-4 whitespace-nowrap rounded-lg bg-indigo-600 px-7 py-3 text-sm text-white shadow-sm justify-center text-center hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                         onClick={async (e) => {
-
-                            //Testing harness
+                            if(!isLinkedInProfile(linkedinUrl)) {
+                                //not a linkedin url
+                                setErrorTitle("Not valid LinkedIn URL")
+                                setErrorMessage("Please past a valid LinkedIn URL")
+                                setErrorModal(true)
+                                return;
+                            }
                             var stepData = {
                                 step_subject_line: localStorage.getItem("subject_line"),
                                 step_template: localStorage.getItem("template"),
@@ -74,9 +89,16 @@ export default function TestTemplate({ searchParams }) {
                             }
                             setLoading(true)
                             const tt = await testEmail(linkedinUrl, stepData)
-                            setTestEmail(tt.body)
-                            setLoading(false)
-
+                            if(tt.error === true) {
+                                setErrorTitle("Something went wrong")
+                                setErrorMessage("Tally's models are confused right now, try a different LinkedIn profile?")
+                                setErrorModal(true)
+                                setLoading(false)
+                                return
+                            } else {
+                                setTestEmail(tt.message.subjectLine + "\n\n\n\n" + tt.message.body)
+                                setLoading(false)
+                            }
                         }}
                     >
                         Test
