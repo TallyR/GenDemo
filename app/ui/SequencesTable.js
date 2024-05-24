@@ -19,6 +19,16 @@ function isSubset(str1, str2) {
     return true;
 }
 
+function extractStringBeforeLastAt(input) {
+    // Find the index of the last occurrence of '@'
+    const lastIndex = input.lastIndexOf('@');
+
+    // Extract the substring before the last '@'
+    const extractedString = input.substring(0, lastIndex);
+
+    return extractedString;
+}
+
 export default function ProspectTable({ jsxEntries, triggerModal }) {
     const [searchTerm, setSearchTerm] = useState('');
     jsxEntries = jsxEntries.filter(trav => {
@@ -31,7 +41,7 @@ export default function ProspectTable({ jsxEntries, triggerModal }) {
         return (
             <tr className="border rounded-lg" key={trav.sequenceName}>
                 <td scope="row" className="w-1/2 px-5 py-2 font-medium">
-                    <div className="pl-1">{trav.sequenceName}</div>
+                    <div className="pl-1">{extractStringBeforeLastAt(trav.sequenceName)}</div>
                 </td>
                 <td className="w-1/4 px-5 py-2">
                     <div className="pl-1">{trav.size}</div>
