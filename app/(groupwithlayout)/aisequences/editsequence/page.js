@@ -259,6 +259,9 @@ export default function NewSequence({ searchParams }) {
                                         localStorage.removeItem("step_name")
                                         localStorage.removeItem("template")
                                         localStorage.removeItem("subject_line")
+
+                                        //add the goal
+                                        localStorage.setItem("goal", goal)
                                     }}
                                     className="ml-2 whitespace-nowrap rounded-lg bg-indigo-600 px-2 py-1 text-xs text-white shadow-sm justify-center text-center hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                 >
@@ -300,6 +303,9 @@ export default function NewSequence({ searchParams }) {
                                                                             localStorage.setItem("template", trav.step_template)
                                                                             localStorage.setItem("step_name", trav.step_name)
                                                                             localStorage.setItem("subject_line", trav.step_subject_line)
+
+                                                                            //add the goal
+                                                                            localStorage.setItem("goal", goal)
                                                                         }}
                                                                         className="ml-2 whitespace-nowrap rounded-lg bg-indigo-600 px-2 py-1 text-xs text-white shadow-sm justify-center text-center hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                                                     >
