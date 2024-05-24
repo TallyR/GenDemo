@@ -6,6 +6,7 @@ import { saveStep } from '@/app/lib/actions'
 import { testEmail } from '@/app/lib/teststep'
 import { RingLoader } from "react-spinners"
 import ErrorModal from "@/app/ui/ErrorModal.js"
+import LoadingModal from "@/app/ui/LoadingModal.js"
 
 function wrapTextWithParagraphs(text) {
     // Normalize the text to handle back-to-back newlines by replacing them with a placeholder newline plus double space
@@ -48,6 +49,9 @@ export default function TestTemplate({ searchParams }) {
     const [errorTitle, setErrorTitle] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
 
+    //loading modal handling
+    const [showLoadingModal, setLoadingModal] = useState(false)
+
     useEffect(() => {
         setStepName(localStorage.getItem('step_name'))
     }, []);
@@ -56,6 +60,7 @@ export default function TestTemplate({ searchParams }) {
         <div className="min-w-full h-dvh">
             <Navbar url={`AI Sequences / Edit Sequence / ${editStep ? "Edit" : "Add"} Step / Test`} />
             <ErrorModal onExit={setErrorModal} showSelf={showErrorModal} errorTitle={errorTitle} errorMessage={errorMessage} />
+            <LoadingModal showSelf={showLoadingModal} />
             <div className="p-4">
                 <label className="block text-xl font-medium leading-6 text-gray-900">
                     {`Paste a Linkedin URL to test your “${stepName}” step`}
@@ -107,6 +112,7 @@ export default function TestTemplate({ searchParams }) {
                         type="button"
                         onClick={async (e) => {
                             e.preventDefault()
+                            setLoadingModal(true)
                             console.log("CALLING HERE")
                             console.log(localStorage.getItem('sequence_name'));
                             if (searchParams.position == '') {
