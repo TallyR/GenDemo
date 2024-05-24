@@ -6,6 +6,7 @@ import { useImmerReducer } from 'use-immer';
 import { useState, useEffect } from 'react';
 import { saveStep } from '@/app/lib/actions'
 import { testEmail } from '@/app/lib/teststep'
+import { RingLoader } from "react-spinners"
 
 function wrapTextWithParagraphs(text) {
     // Normalize the text to handle back-to-back newlines by replacing them with a placeholder newline plus double space
@@ -36,6 +37,7 @@ export default function TestTemplate({ searchParams }) {
     const [testEmailRet, setTestEmail] = useState('')
     const [stepName, setStepName] = useState('')
     const [linkedinUrl, setLinkedinURl] = useState('')
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         setStepName(localStorage.getItem('step_name'))
@@ -70,8 +72,10 @@ export default function TestTemplate({ searchParams }) {
                                 step_example_bodys: JSON.parse(localStorage.getItem("example_information_body")),
                                 goal: localStorage.getItem("subject_line")
                             }
+                            setLoading(true)
                             const tt = await testEmail(linkedinUrl, stepData)
                             setTestEmail(tt.body)
+                            setLoading(false)
 
                         }}
                     >
@@ -95,9 +99,18 @@ export default function TestTemplate({ searchParams }) {
                         Save step
                     </button>
                 </div>
-                <div className="mt-4">
-                    {wrapTextWithParagraphs(testEmailRet)}
-                </div>
+                {
+                    loading &&
+                    <div className="mt-4 p-10 text-sm font-medium inline-block rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600">
+                        <RingLoader />
+                    </div>
+                }
+                {
+                    !loading && testEmailRet !== '' &&
+                    <div className="mt-4 p-10 text-xs font-medium inline-block w-2/3 rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600">
+                        {<div>{wrapTextWithParagraphs(testEmailRet)}</div>}
+                    </div>
+                }
             </div>
         </div>
     );
