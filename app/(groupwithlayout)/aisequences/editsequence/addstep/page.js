@@ -236,11 +236,11 @@ export default function AddStep({ searchParams }) {
                                     localStorage.removeItem(MEMORY_KEY_TEMPLATE);
 
                                     const editStep = searchParams.editStep === undefined ? false : searchParams.editStep
-                                    const position = searchParams.position === undefined ? '' : searchParam.position
+                                    const position = searchParams.position === undefined ? '' : searchParams.position
 
                                     // Prepare the URL and query parameters
                                     const targetUrl = finalCondition ? '/aisequences/editsequence/addstep/example' : '/aisequences/editsequence/addstep/testtemplate';
-                                    const query = finalCondition ? { name: 'Example #1', editStep: editStep, position: position } : {};
+                                    const query = finalCondition ? { name: 'Example #1', editStep: editStep, position: position } : {editStep: editStep, position: position};
 
                                     console.log('Navigating to:', targetUrl);
                                     console.log('With query:', query);
