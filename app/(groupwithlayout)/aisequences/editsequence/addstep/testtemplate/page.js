@@ -56,6 +56,8 @@ export default function TestTemplate({ searchParams }) {
         setStepName(localStorage.getItem('step_name'))
     }, []);
 
+    console.log(searchParams.position == '' || searchParams.position === undefined)
+
     return (
         <div className="min-w-full h-dvh">
             <Navbar url={`AI Sequences / Edit Sequence / ${editStep ? "Edit" : "Add"} Step / Test`} />
@@ -115,7 +117,7 @@ export default function TestTemplate({ searchParams }) {
                             setLoadingModal(true)
                             console.log("CALLING HERE")
                             console.log(localStorage.getItem('sequence_name'));
-                            if (searchParams.position == '') {
+                            if (searchParams.position == '' || searchParams.position === undefined) {
                                 await saveStep(localStorage.getItem('sequence_name'), localStorage.getItem("step_name"), localStorage.getItem("template"), JSON.parse(localStorage.getItem("example_information_subject_line")), JSON.parse(localStorage.getItem("example_information_body")), localStorage.getItem("subject_line"))
                             }
                             else {

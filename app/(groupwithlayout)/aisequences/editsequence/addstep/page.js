@@ -3,14 +3,24 @@
 import Navbar from "@/app/ui/Navbar";
 import Link from 'next/link';
 import { useImmerReducer } from 'use-immer';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import ErrorModal from "@/app/ui/ErrorModal";
 import clsx from 'clsx';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 
 const MEMORY_KEY_SUBJECT_LINE = "example_information_subject_line"
 const MEMORY_KEY_TEMPLATE = "example_information_body"
 
+function getCurrentUnixTimeMs() {
+    return new Date().getTime(); // This returns the Unix timestamp in milliseconds
+}
+
+function hasMoreThan100MsPassed(currentTimeMs, pastTimeMs) {
+    console.log("TIME!")
+    console.log("most recent type -> " + pastTimeMs)
+    console.log(currentTimeMs - pastTimeMs);
+    return (currentTimeMs - pastTimeMs) > 2000;
+}
 
 function reducer(draft, action) {
     switch (action.type) {
@@ -88,7 +98,6 @@ export default function AddStep({ searchParams }) {
 
     const initialState = { template: "", pointerPos: 0, subjectLine: "", subjectLinePointerPos: 0, active: -1, stepName: "" }
     const [state, dispatch] = useImmerReducer(reducer, initialState)
-    const [stepName, setStepName] = useState('')
 
     //these HAVE to be in order, then execute in order of each other
     useEffect(() => {
@@ -138,6 +147,10 @@ export default function AddStep({ searchParams }) {
     if (searchParams.editStep === "true") {
         editStep = true
     }
+
+    const router = useRouter();
+
+    console.log(searchParams.position === undefined)
 
     return (
         <div className="min-w-full">
@@ -189,7 +202,6 @@ export default function AddStep({ searchParams }) {
                                 style={{ fontSize: '12px' }}
                                 className="w-full mt-2 block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                 onChange={(e) => {
-                                    e.preventDefault();
                                     dispatch({
                                         type: "update_template",
                                         template: e.target.value,
@@ -200,26 +212,50 @@ export default function AddStep({ searchParams }) {
                             />
                         </div>
                         <div className="flex flex-row-reverse pt-2">
-                            <Link
+                            <button
                                 type="button"
-                                href={{
-                                    pathname: '/aisequences/editsequence/addstep/example',
-                                    query: { name: 'Example #1', editStep: searchParams.editStep, position: searchParams.position},
-                                }}
                                 onClick={(e) => {
+                                    const isTemplateValid = localStorage.getItem("template") != null && localStorage.getItem("template").includes("@ai_reference");
+                                    const isSubjectLineValid = localStorage.getItem("subject_line") != null && localStorage.getItem("subject_line").includes("@ai_reference");
+                                    const finalCondition = isTemplateValid || isSubjectLineValid;
+
+                                    console.log('isTemplateValid:', isTemplateValid);
+                                    console.log('isSubjectLineValid:', isSubjectLineValid);
+                                    console.log('Final Condition:', finalCondition);
+
                                     if (state.subjectLine === "" || state.template === "" || state.stepName === "") {
-                                        e.preventDefault()
-                                        setErrorTitle('Not all fields have been filled out!')
-                                        setErrorMessage(`Please make sure to fill out the "Subject line", "Template", and "Step name"`)
-                                        setErrorModal(true)
+                                        console.log("Prevent navigation due to empty fields");
+                                        e.preventDefault();
+                                        setErrorTitle('Not all fields have been filled out!');
+                                        setErrorMessage(`Please make sure to fill out the "Subject line", "Template", and "Step name"`);
+                                        setErrorModal(true);
+                                        return;
                                     }
-                                    localStorage.removeItem(MEMORY_KEY_SUBJECT_LINE)
-                                    localStorage.removeItem(MEMORY_KEY_TEMPLATE)
+
+                                    localStorage.removeItem(MEMORY_KEY_SUBJECT_LINE);
+                                    localStorage.removeItem(MEMORY_KEY_TEMPLATE);
+
+                                    const editStep = searchParams.editStep === undefined ? false : searchParams.editStep
+                                    const position = searchParams.position === undefined ? '' : searchParam.position
+
+                                    // Prepare the URL and query parameters
+                                    const targetUrl = finalCondition ? '/aisequences/editsequence/addstep/example' : '/aisequences/editsequence/addstep/testtemplate';
+                                    const query = finalCondition ? { name: 'Example #1', editStep: editStep, position: position } : {};
+
+                                    console.log('Navigating to:', targetUrl);
+                                    console.log('With query:', query);
+
+                                    // Ensure targetUrl is a string and query is an object
+                                    if (typeof targetUrl === 'string' && typeof query === 'object') {
+                                        router.push(targetUrl + "?" + new URLSearchParams(query).toString());
+                                    } else {
+                                        console.error('Invalid URL or query parameters:', targetUrl, query);
+                                    }
                                 }}
                                 className="whitespace-nowrap rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                             >
                                 Next
-                            </Link>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -312,7 +348,7 @@ export default function AddStep({ searchParams }) {
                             type="button"
                             className="mt-4 whitespace-nowrap rounded-lg bg-green-600 px-3 py-3 text-xs text-white shadow-sm justify-center text-center hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
                         >
-                            ai reference
+                            ai linkedin reference
                         </button>
                     </div>
                 </div>

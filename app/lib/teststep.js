@@ -75,13 +75,15 @@ function repopulateAllExamples(examples_obj) {
 
 async function generateEmail(linkedinUrl, stepData) {
     const parsedLinked = await grabLinkedinDataAndGenerateEmail(linkedinUrl, stepData.step_subject_line, stepData.step_template)
+    if(stepData.step_example_subject_lines === null && stepData.step_example_bodys === null) {
+        return parsedLinked;
+    }
+    
+    //this should only be ran if there are examples to be re-populated
     const examplesPopulated = repopulateAllExamples(stepData)
-
     console.log(parsedLinked)
-
     var tt = generatePrompt(stepData.goal, parsedLinked.linkedinData, examplesPopulated.subject_line_one + "\n" + examplesPopulated.body_one, examplesPopulated.subject_line_two + "\n" + examplesPopulated.body_two, parsedLinked.subject_line, parsedLinked.body)
     return tt;
-
 }
 
 //generate prompt for openai
@@ -152,11 +154,32 @@ function generatePrompt(sellingDescription, linkedinData, exampleEmailOne, examp
 
 //to generate the test email
 export async function testEmail(linkedinUrl, stepData) {
+    console.log("Step data: ")
+    console.log(stepData)
+    /*
+    if(stepData.step_example_subject_lines === null && stepData.step_example_bodys === null) {
+        const emailNoAI = await generateEmail(linkedinUrl, stepData);
+        return {
+            message: JSON.parse(res.choices[0].message.content), 
+            error: false
+        }
+    }
+    */
     try {
-        //global variables
-        console.log(process)
         const openai = new OpenAI({ apiKey: process.env.OPEN_AI_KEY });
         const plz = await generateEmail(linkedinUrl, stepData);
+        console.log(plz)
+
+        //user is not utilizing AI
+        if(stepData.step_example_subject_lines === null && stepData.step_example_bodys === null) {
+            return {
+                message: {
+                    subjectLine: plz.subject_line,
+                    body: plz.body
+                }
+            }
+        }
+
         const res = await openai.chat.completions.create({
             messages: [{ role: "system", content: plz }],
             top_p: 0.7,
@@ -170,6 +193,7 @@ export async function testEmail(linkedinUrl, stepData) {
             error: false
         }
     } catch (error) {
+        console.log(error)
         return {
             error: true
         }
