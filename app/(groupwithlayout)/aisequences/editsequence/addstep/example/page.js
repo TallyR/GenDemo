@@ -116,7 +116,7 @@ export default function Example({ searchParams }) {
                             trackOfFields.template += 1;
                         }
                         startState[`${exampleNumber}-${passRef}`] = grabVal(exampleNumber, passRef, numb)
-                        return <input key={`${exampleNumber}-${numb}-${startPoint}`} value={body[`${exampleNumber}-${passRef}`] || ''} placeholder="first name" type="text" onChange={(e) => {
+                        return <input key={`${exampleNumber}-${numb}-${startPoint}`} defaultValue={body[`${exampleNumber}-${passRef}`] || ''} placeholder="first name" type="text" onChange={(e) => {
                             setObj(prevBody => {
                                 return { ...prevBody, [`${exampleNumber}-${passRef}`]: e.target.value };
                             })
@@ -130,7 +130,7 @@ export default function Example({ searchParams }) {
                         } else if (numb === TEMPLATE_CONSTANT) {
                             trackOfFields.template += 1;
                         }
-                        return <input key={`${exampleNumber}-${numb}-${startPoint}`} value={body[`${exampleNumber}-${passRef}`] || ''} placeholder="last name" onChange={(e) => {
+                        return <input key={`${exampleNumber}-${numb}-${startPoint}`} defaultValue={body[`${exampleNumber}-${passRef}`] || ''} placeholder="last name" onChange={(e) => {
                             setObj(prevBody => {
                                 return { ...prevBody, [`${exampleNumber}-${passRef}`]: e.target.value };
                             })
@@ -144,7 +144,7 @@ export default function Example({ searchParams }) {
                         } else if (numb === TEMPLATE_CONSTANT) {
                             trackOfFields.template += 1;
                         }
-                        return <input key={`${exampleNumber}-${numb}-${startPoint}`} value={body[`${exampleNumber}-${passRef}`] || ''} placeholder="company name" onChange={(e) => {
+                        return <input key={`${exampleNumber}-${numb}-${startPoint}`} defaultValue={body[`${exampleNumber}-${passRef}`] || ''} placeholder="company name" onChange={(e) => {
                             setObj(prevBody => {
                                 return { ...prevBody, [`${exampleNumber}-${passRef}`]: e.target.value };
                             })
@@ -158,7 +158,7 @@ export default function Example({ searchParams }) {
                         } else if (numb === TEMPLATE_CONSTANT) {
                             trackOfFields.template += 1;
                         }
-                        return <input key={`${exampleNumber}-${numb}-${startPoint}`} value={body[`${exampleNumber}-${passRef}`] || ''} placeholder="full name" onChange={(e) => {
+                        return <input key={`${exampleNumber}-${numb}-${startPoint}`} defaultValue={body[`${exampleNumber}-${passRef}`] || ''} placeholder="full name" onChange={(e) => {
                             setObj(prevBody => {
                                 return { ...prevBody, [`${exampleNumber}-${passRef}`]: e.target.value };
                             })
@@ -172,7 +172,7 @@ export default function Example({ searchParams }) {
                         } else if (numb === TEMPLATE_CONSTANT) {
                             trackOfFields.template += 1;
                         }
-                        return <input rows={1} key={`${exampleNumber}-${numb}-${startPoint}`} value={body[`${exampleNumber}-${passRef}`] || ''} placeholder="example linkedin reference" onChange={(e) => {
+                        return <input rows={1} key={`${exampleNumber}-${numb}-${startPoint}`} defaultValue={body[`${exampleNumber}-${passRef}`] || ''} placeholder="example linkedin reference" onChange={(e) => {
                             setObj(prevBody => {
                                 return { ...prevBody, [`${exampleNumber}-${passRef}`]: e.target.value };
                             })
@@ -183,7 +183,9 @@ export default function Example({ searchParams }) {
             });
 
             // Wrap the processed line in a <p> tag
-            console.log(trackOfFields)
+            if(lineContent == '') {
+                return <br key={lineIndex}/>
+            }
             return <p className="m-1" key={lineIndex}>{lineContent}</p>;
         });
 

@@ -147,7 +147,11 @@ function generatePrompt(sellingDescription, linkedinData, exampleEmailOne, examp
 
         Put extra spaces before the email signature and after the introduction!
 
+        JSON requires all newlines within strings to be escaped with a backslash (\n) and it NEEDS TO BE A SINGLE LINE!
+
         MAKE SURE TO REMOVE ALL @ai_reference
+
+        You HAVE to come up with a subjectLine and body that is a non empty string!
     `
     )
 }

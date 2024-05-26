@@ -67,6 +67,9 @@ export default function TestTemplate({ searchParams }) {
                 <label className="block text-xl font-medium leading-6 text-gray-900">
                     {`Paste a Linkedin URL to test your “${stepName}” step`}
                 </label>
+                <label className="mt-2 mb-2 block text-sm leading-6 text-gray-900">
+                    {`Takes ~30 seconds to process, be patient!`}
+                </label>
                 <div className="mt-4 flex items-center">
                     <input
                         className="block w-1/2 rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
