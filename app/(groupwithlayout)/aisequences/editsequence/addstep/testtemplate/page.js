@@ -100,7 +100,7 @@ export default function TestTemplate({ searchParams }) {
                         type="button"
                         className="ml-4 whitespace-nowrap rounded-lg bg-indigo-600 px-7 py-3 text-sm text-white shadow-sm justify-center text-center hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                         onClick={async (e) => {
-                            if(!isLinkedInProfile(linkedinUrl)) {
+                            if (!isLinkedInProfile(linkedinUrl)) {
                                 //not a linkedin url
                                 setErrorTitle("Not valid LinkedIn URL")
                                 setErrorMessage("Please past a valid LinkedIn URL")
@@ -116,7 +116,7 @@ export default function TestTemplate({ searchParams }) {
                             }
                             setLoading(true)
                             const tt = await testEmail(linkedinUrl, stepData)
-                            if(tt.error === true) {
+                            if (tt.error === true) {
                                 setErrorTitle("Something went wrong")
                                 setErrorMessage("Tally's models are confused right now, try a different LinkedIn profile?")
                                 setErrorModal(true)
@@ -157,7 +157,7 @@ export default function TestTemplate({ searchParams }) {
                 }
                 {
                     !loading && testEmailRet !== '' &&
-                    <div className="mt-4 p-10 text-xs font-medium inline-block w-2/3 rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600">
+                    <div className="mt-4 p-10 text-xs max-h-[350px] font-medium inline-block w-2/3 rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 overflow-y-auto">
                         {<div>{wrapTextWithParagraphs(testEmailRet)}</div>}
                     </div>
                 }

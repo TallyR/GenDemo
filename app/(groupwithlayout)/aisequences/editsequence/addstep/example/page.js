@@ -246,7 +246,7 @@ export default function Example({ searchParams }) {
                 <label className="block text-sm ml-2 font-semibold mt-4 text-gray-900">
                     Body
                 </label>
-                <div className="text-xs shadow-m rounded-lg border p-4 border-black m-2 h-1/2" key={searchParams.name}>
+                <div className="text-xs shadow-m max-h-[350px] rounded-lg border p-4 border-black m-2 h-1/2 overflow-y-auto" key={searchParams.name}>
                     {process}
                 </div>
                 <div className="flex flex-row-reverse pt-2">

@@ -75,10 +75,10 @@ function repopulateAllExamples(examples_obj) {
 
 async function generateEmail(linkedinUrl, stepData) {
     const parsedLinked = await grabLinkedinDataAndGenerateEmail(linkedinUrl, stepData.step_subject_line, stepData.step_template)
-    if(stepData.step_example_subject_lines === null && stepData.step_example_bodys === null) {
+    if (stepData.step_example_subject_lines === null && stepData.step_example_bodys === null) {
         return parsedLinked;
     }
-    
+
     //this should only be ran if there are examples to be re-populated
     const examplesPopulated = repopulateAllExamples(stepData)
     console.log(parsedLinked)
@@ -152,6 +152,8 @@ function generatePrompt(sellingDescription, linkedinData, exampleEmailOne, examp
         MAKE SURE TO REMOVE ALL @ai_reference
 
         You HAVE to come up with a subjectLine and body that is a non empty string!
+
+        If there is an email signature included DO NOT CHANGE IT OR EVEN CHANGE THE FORMATTING!
     `
     )
 }
@@ -175,7 +177,7 @@ export async function testEmail(linkedinUrl, stepData) {
         console.log(plz)
 
         //user is not utilizing AI
-        if(stepData.step_example_subject_lines === null && stepData.step_example_bodys === null) {
+        if (stepData.step_example_subject_lines === null && stepData.step_example_bodys === null) {
             return {
                 message: {
                     subjectLine: plz.subject_line,
@@ -193,7 +195,7 @@ export async function testEmail(linkedinUrl, stepData) {
         });
         console.log(res.choices[0].message.content)
         return {
-            message: JSON.parse(res.choices[0].message.content), 
+            message: JSON.parse(res.choices[0].message.content),
             error: false
         }
     } catch (error) {
