@@ -11,7 +11,7 @@ async function grabCompanyData(linkedinUrl) {
     const api_endpoint = 'https://nubela.co/proxycurl/api/linkedin/company';
     const params = {
         'url': linkedinUrl,
-        'resolve_numeric_id': false,
+        'resolve_numeric_id': true,
         'categories': 'exclude',
         'funding_data': 'exclude',
         'exit_data': 'exclude',

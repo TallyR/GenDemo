@@ -184,9 +184,9 @@ export default function Example({ searchParams }) {
 
             // Wrap the processed line in a <p> tag
             if(lineContent == '') {
-                return <br key={lineIndex}/>
+              return <br key={lineIndex}/>
             }
-            return <p className="m-1" key={lineIndex}>{lineContent}</p>;
+            return <p key={lineIndex}>{lineContent}</p>;
         });
 
         //init memory
@@ -240,13 +240,13 @@ export default function Example({ searchParams }) {
                 <label className="block text-sm font-semibold m-2 text-gray-900">
                     Subject line
                 </label>
-                <div className="text-sm shadow-m rounded-lg border p-4 border-black m-2 h-1/2" key={`${searchParams.name} subject_line`}>
+                <div className="text-xs shadow-m rounded-lg border p-4 border-black m-2 h-1/2" key={`${searchParams.name} subject_line`}>
                     {subjectLine}
                 </div>
                 <label className="block text-sm ml-2 font-semibold mt-4 text-gray-900">
                     Body
                 </label>
-                <div className="text-sm shadow-m rounded-lg border p-4 border-black m-2 h-1/2" key={searchParams.name}>
+                <div className="text-xs shadow-m rounded-lg border p-4 border-black m-2 h-1/2" key={searchParams.name}>
                     {process}
                 </div>
                 <div className="flex flex-row-reverse pt-2">

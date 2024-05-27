@@ -15,12 +15,29 @@ function wrapTextWithParagraphs(text) {
     // Split the normalized text into an array of lines based on newlines
     const lines = normalizedText.split('\n');
 
+    // Regular expression to match URLs, excluding .ai unless prefixed by http, https, or www
+    const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+|[^\s]+\.(?!ai\b)[a-z]{2,}(?:\/[^\s]*)?)/gi;
+
     // Map each line into a paragraph; if the line is empty (representing back-to-back newlines), add an extra space
-    const wrappedText = lines.map(line => {
+    const wrappedText = lines.map((line, index) => {
         if (line === '  ') { // Check for the double space which indicates original consecutive newlines
-            return <p>&nbsp;</p>; // Insert an HTML entity for space to ensure the space is visible
+            return <p key={index}>&nbsp;</p>; // Insert an HTML entity for space to ensure the space is visible
         }
-        return <p>{line}</p>;
+
+        // Replace URLs with anchor tags
+        const lineWithLinks = line.split(urlRegex).map((part, i) => {
+            if (urlRegex.test(part)) {
+                const href = part.startsWith('www.') ? `http://${part}` : (part.startsWith('http') ? part : `https://${part}`);
+                return (
+                    <a key={`${index}-${i}`} href={href} target="_blank" style={{ color: 'blue' }}>
+                        {part}
+                    </a>
+                );
+            }
+            return part;
+        });
+
+        return <p key={index}>{lineWithLinks}</p>;
     });
 
     // Return the entire array of paragraphs wrapped in a single containing paragraph (if needed) or a fragment/div
@@ -28,7 +45,7 @@ function wrapTextWithParagraphs(text) {
 }
 
 function isLinkedInProfile(url) {
-    const pattern = /^https?:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9\-_]+\/?$/;
+    const pattern = /^https?:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9\-_À-ÖØ-öø-ÿ%C4%87]+\/?$/;
     return pattern.test(url);
 }
 

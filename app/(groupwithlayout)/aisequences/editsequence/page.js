@@ -62,9 +62,9 @@ function extractStringBeforeLastAt(input) {
 function processSequenceSteps(stepsArray) {
     console.log("Print this:")
     console.log(stepsArray)
-    return stepsArray.map(trav => {
+    return stepsArray.map((trav, index) => {
         return (
-            <tr className="border rounded-lg">
+            <tr key={index+"KEYFORDAYS"}className="border rounded-lg">
                 <td scope="row" className="w-1/2 px-3 py-3 font-small text">
                     <div className="pl-1">{trav.step_name}</div>
                 </td>
