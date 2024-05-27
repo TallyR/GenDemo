@@ -129,7 +129,7 @@ export async function testWrite(jobData) {
         await client.connect();
         const database = await client.db('users');
         const userCollection = await database.collection('userData');
-        const jobCollection = await database.collection('jobsQueue');
+        const jobCollection = await database.collection('jobsQueue_DEV2'); //NEED TO CHANGE THIS!!!!!!!!!!
         const query = { userId: userId };
         var foundUserOrNeedToCreateOne = await userCollection.findOne(query);
 
@@ -161,7 +161,8 @@ export async function testWrite(jobData) {
         const jobQueueEntry = {
             jobData: jobData.jobDataArray,
             jobName: jobData.jobTitle,
-            userId: foundUserOrNeedToCreateOne.userId
+            userId: foundUserOrNeedToCreateOne.userId,
+            sequenceName: jobData.sequenceName
         }
         await jobCollection.insertOne(jobQueueEntry)
 
@@ -455,6 +456,8 @@ export async function processFile(prevState, formData) {
     noStore();
     var retObj = { parsedArray: null, error: null }
 
+    console.log(formData)
+
     //reset form
     if (formData.type && formData.type === 'RESET') {
         return formData.payload;
@@ -467,13 +470,21 @@ export async function processFile(prevState, formData) {
         return retObj
     }
 
+    if(formData.get("sequence") === 'No sequences created') {
+        console.log("error")
+        retObj.error = 'no_sequence_created'
+        return retObj
+    }
+
+    console.log(formData)
+
     //check if email is connected
     //var checkEmailConnected = await checkIfEmailConnected() // HAD TO CHANGE TO TEMPORARILY DEPRECATE UNIPILE, will reverse soon ;)
     var checkEmailConnected = await checkIfGmailIsConnected()
     if (!checkEmailConnected.connected) {
         console.log('email not connected')
         retObj.error = 'no_email_connected'
-        return retObj
+        return retObj 
     }
 
     //new file uploaded

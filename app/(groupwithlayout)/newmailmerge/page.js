@@ -10,14 +10,32 @@ import { testWrite } from '@/app/lib/actions';
 import clsx from 'clsx';
 import ErrorModal from "@/app/ui/ErrorModal";
 import { useEffect } from 'react';
+import { grabEmailSequences } from '@/app/lib/actions';
+import LoadingModal from '@/app/ui/LoadingModal'
+
+function extractStringBeforeLastAt(input) {
+    if(input === undefined) {
+        return
+    }
+    // Find the index of the last occurrence of '@'
+    const lastIndex = input.lastIndexOf('@');
+    if(lastIndex === -1) {
+        return input
+    }
+    // Extract the substring before the last '@'
+    const extractedString = input.substring(0, lastIndex);
+    return extractedString;
+}
 
 export default function NewMailMerge() {
     const initialState = { parsedArray: null, error: null };
     const [state, dispatch] = useFormState(processFile, initialState);
     const [jobTitle, setTitleState] = useState('')
     const [submitting, setSubmit] = useState(false);
-
     const [buttonMessage, setButtonMessage] = useState('Submit')
+    const [jsxEntries, setEntries] = useState([{ name: "Loading" }])
+    const [loading, setLoading] = useState(false)
+    const [chosenSequence, setChosenSequence] = useState('No sequences created')
 
     //error modal handling
     const [showErrorModal, setErrorModal] = useState(false)
@@ -41,9 +59,14 @@ export default function NewMailMerge() {
             setErrorMessage("Requires a .csv file with columns titled 'Email' and 'Person Linkedin Url'.")
             setErrorModal(true)
             setButtonMessage('Submit')
-        } else if(state.error === "too_many_entries") {
+        } else if (state.error === "too_many_entries") {
             setErrorTitle('Too large')
             setErrorMessage("Due to concerns about email reputation safety, email sequences must not exceed 200 entries.")
+            setErrorModal(true)
+            setButtonMessage('Submit')
+        } else if (state.error === "no_sequence_created") {
+            setErrorTitle('No email sequences created')
+            setErrorMessage(`You haven't created any email sequences yet, please visit the "AI Sequences" tab`)
             setErrorModal(true)
             setButtonMessage('Submit')
         }
@@ -60,29 +83,88 @@ export default function NewMailMerge() {
     function submitToDatabase() {
         var timestamp = new Date().getTime();
         setSubmit(true);
-        testWrite({ jobDataArray: state.parsedArray, jobTitle: jobTitle + "@" + timestamp, status: 'started' })
+        testWrite({ jobDataArray: state.parsedArray, jobTitle: jobTitle + "@" + timestamp, status: 'started', sequenceName: chosenSequence})
     }
+
+    var list = jsxEntries.map(e => {
+        console.log(e.sequenceName)
+        return <option key={e.sequenceName} value={e.sequenceName}>{extractStringBeforeLastAt(e.sequenceName)}</option>
+    })
+
+
+    useEffect(() => {
+        const grab = async () => {
+            const data = await grabEmailSequences()
+            const convertToJson = data.map(trav => {
+                return (
+                    { sequenceTitle: trav.sequenceName, length: trav.length }
+                )
+            })
+            console.log(data)
+            //setEntries(data)
+            if(data.length != 0) {
+                setEntries(data)
+                setChosenSequence(data[0].sequenceName)
+            } else {
+                console.log("EMPTY")
+                setEntries([{ sequenceName: 'No sequences created', size: 0}])
+                setChosenSequence('No sequences created')
+            }
+        };
+        setLoading(true)
+        grab().then(e => {
+            setLoading(false)
+        })
+    }, [])
 
     if (state.parsedArray === null) {
         return (
-            <div className="min-w-full">
+            <div className="min-w-full min-h-full">
                 <Navbar url="New AI Mail Merge" />
                 <ErrorModal onExit={setErrorModal} showSelf={showErrorModal} errorTitle={errorTitle} errorMessage={errorMessage} />
-                <div className="mt-8 ml-8 w-[400px] h-[200px] shadow-2xl rounded-lg border-2 border-black mb-20">
-                    <p className="m-4 font-semibold">Upload CSV File</p>
-                    <div className="w-full pt-4 justify-center items-center">
-                        <form action={dispatch} onSubmit={() => {
-                            setButtonMessage('Loading...')
-                        }} key="unique">
-                            <input type="file" name="file" className="mb-3 ml-4" id="file" onChange={(e) => console.log(e)} />
-                            <button type="submit" disabled={buttonMessage === 'Loading...'} className={clsx(
-                                (buttonMessage !== 'Loading...') ? "ml-4 flex justify-center w-40 rounded-md bg-indigo-600 px-2 py-1 text-sm text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" : "ml-4 flex justify-center w-40 rounded-md bg-gray-600 px-2 py-1 text-sm text-white shadow-sm  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                            )}>
-                                {buttonMessage}
-                            </button>
-                        </form>
+                <LoadingModal showSelf={loading} />
+                <div className="flex">
+                    <div className="mt-8 ml-8 w-[400px] shadow-2xl rounded-lg border-2 border-black mb-20">
+
+                        <div className="w-full pt-4 justify-center items-center">
+                            <form action={dispatch} onSubmit={() => {
+                                setButtonMessage('Loading...')
+                            }} key="unique">
+                                <p className="ml-4 mb-2 font-semibold">Upload CSV File</p>
+                                <input type="file" name="file" className="mb-3 ml-4" id="file" onChange={(e) => console.log(e)} />
+
+                                {/*If user doesn't have an AI sequence, make them choose one with the button!*/}
+                                {true &&
+                                    <p className="ml-4 mb-2 font-semibold">Choose your email sequence</p>
+                                }
+                                {true &&
+                                    <select
+                                        id="sequence"
+                                        name="sequence"
+                                        onChange={e => setChosenSequence(e.target.value)}
+                                        className="mt-2 ml-4 mr-4 block rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                    >
+                                        {
+                                            list
+                                        }
+                                    </select>
+                                }
+                                <button type="submit" disabled={buttonMessage === 'Loading...'} className={clsx(
+                                    (buttonMessage !== 'Loading...') ? "ml-4 mb-4 mt-4 flex justify-center w-40 rounded-md bg-indigo-600 px-2 py-1 text-sm text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" : "ml-4 mt-4 mb-4 flex justify-center w-40 rounded-md bg-gray-600 px-2 py-1 text-sm text-white shadow-sm  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                )}>
+                                    {buttonMessage}
+                                </button>
+                            </form>
+                        </div>
                     </div>
+                    <Link
+                        href="/aisequences"
+                        className="m-8 rounded-lg max-h-[50px] bg-green-600 px-4 py-4 text-sm text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 flex items-center justify-center"
+                    >
+                        Create email sequences
+                    </Link>
                 </div>
+
             </div>
         )
     } else {
@@ -94,6 +176,12 @@ export default function NewMailMerge() {
                 <div className="pt-8 pl-8 pr-96">
                     <div className="min-w-full h-full border-2 border-black-500/75 shadow-xl rounded-lg pl-8 pr-8 mb-8 border-black">
                         <div className="sm:col-span-4 pt-6">
+                            <label htmlFor="email" className="text-lg font-medium leading-6 text-gray-900">
+                               Using "{extractStringBeforeLastAt(chosenSequence)}" sequence
+                            </label>
+                            <div className="mt-2 mb-2">
+                                
+                            </div>
                             <label htmlFor="email" className="text-sm font-medium leading-6 text-gray-900">
                                 Name your mail merge
                             </label>
@@ -133,9 +221,7 @@ export default function NewMailMerge() {
                         </div>
                     </div>
                 </div>
-
             </div>
-
         );
     }
 }
