@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { useState } from 'react';
+import { extractStringBeforeLastAt } from '@/app/lib/random'
 
 function isSubset(str1, str2) {
     // Convert strings to lowercase for case-insensitive comparison
@@ -27,7 +28,7 @@ export default function JobsStatusTable({ processedJobs }) {
                         {trav.company}
                     </td>
                     <td className="px-5 py-2">
-                        {trav.sequence}
+                        {extractStringBeforeLastAt(trav.sequence)}
                     </td>
                     <td className="px-5 py-2">
                         {trav.stage}

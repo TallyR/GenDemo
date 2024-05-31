@@ -76,27 +76,21 @@ export default function Example({ searchParams }) {
     if (searchParams.editStep === "true") {
         editStep = true
     }
-
     const [sLine, setSLine] = useState({})
     const [body, setBody] = useState({})
     const [process, setProcess] = useState('')
     const [stepName, setStepName] = useState('')
     const [subjectLine, setSubjectLine] = useState('')
-
     //error modal handling
     const [showErrorModal, setErrorModal] = useState(false)
     const [errorTitle, setErrorTitle] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-
-
     function replacePlaceholdersWithJSX(text, setObj, exampleNumber, body, numb) {
-
         if (numb === SUBJECT_LINE_CONSTANT) {
             trackOfFields.subjectLine = 0
         } else if (numb === TEMPLATE_CONSTANT) {
             trackOfFields.template = 0
         }
-
         var startPoint = -1;
         var startState = {}
         const lines = text.split('\n');
@@ -188,7 +182,6 @@ export default function Example({ searchParams }) {
             }
             return <p key={lineIndex}>{lineContent}</p>;
         });
-
         //init memory
         if (numb === TEMPLATE_CONSTANT) {
             console.log("START STATE!")
@@ -201,7 +194,6 @@ export default function Example({ searchParams }) {
         }
         return content;
     }
-
     useEffect(() => {
         var exampleNumber = 0;
         if (searchParams.name === 'Example #1') {
@@ -267,21 +259,15 @@ export default function Example({ searchParams }) {
                             }
                             //e.preventDefault()
                             //console.log(localStorage.getItem("subject_line")) 
-                            
-
                             console.log("Subject line targeted fields " + trackOfFields.subjectLine)
                             console.log("here")
                             var test1 = hasEmptyStringValue(subFields, trackOfFields.subjectLine, exampleNumber)
                             console.log("here")
                             console.log("Template targeted fields " + trackOfFields.template)
                             var test2 = hasEmptyStringValue(bodyFields, trackOfFields.template, exampleNumber)
-
-
                             console.log(test1)
                             console.log(test2)
                             console.log(false || false)
-
-
                             if (hasEmptyStringValue(subFields, trackOfFields.subjectLine, exampleNumber) === true || hasEmptyStringValue(bodyFields, trackOfFields.template, exampleNumber) === true) {
                                 e.preventDefault();
                                 console.log("Not all fields are full!")
@@ -289,7 +275,6 @@ export default function Example({ searchParams }) {
                                 setErrorMessage("Please fill in all blanks, Tally is trying to learn how you write :)")
                                 setErrorModal(true)
                             }
-                            
                         }}
                         className="whitespace-nowrap rounded-lg bg-indigo-600 px-6 py-3 text-m text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                     >

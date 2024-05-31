@@ -40,14 +40,14 @@ function extractStringBeforeLastAt(input) {
 export default async function Prospecting() {
     var res = await grabUserJobs();
     console.log(res)
-    if(!res) {
+    if (!res) {
         res = [] //bad request
     }
     const reversed = res.reverse()
 
     const processedJobs = reversed.map(trav => {
         return {
-            jobTitle: extractStringBeforeLastAt(trav.jobTitle),
+            jobTitle:trav.jobTitle,
             jobState: trav.status,
             jobDate: parseAndConvertDate(trav.jobTitle),
             jobKey: trav.jobTitle
@@ -59,7 +59,7 @@ export default async function Prospecting() {
         return (
             <tr className="border rounded-lg text-xs" key={trav.jobKey}>
                 <td className="px-6 py-2 font-medium">
-                    {trav.jobTitle}
+                    {extractStringBeforeLastAt(trav.jobTitle)}
                 </td>
                 <td className="px-6 py-2">
                     {trav.jobDate}
@@ -76,7 +76,10 @@ export default async function Prospecting() {
                 <td className="px-6 py-2">
                     <Link
                         type="button"
-                        href="/viewjobs"
+                        href={{
+                            pathname: "/viewjobs",
+                            query: { jobName: trav.jobTitle }
+                        }}
                         className="whitespace-nowrap rounded-lg bg-indigo-600 px-3.5 py-2.5 text-xs text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                     >
                         results

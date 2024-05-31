@@ -59,7 +59,7 @@ async function grabOrCacheLinkedinData(linkedinCollection, badLinkedinCollection
     var foundLinkedinData = await linkedinCollection.findOne(linkedinQuery)
     var foundBadLinkedin = await badLinkedinCollection.findOne(badlinkedinQuery)
     if (foundBadLinkedin !== null) {
-        console.log("this is BAD linkedin")
+        console.log("this is BAD linkedin + hit cache!")
         throw errow;
     }
     if (foundLinkedinData === null) {
@@ -165,7 +165,7 @@ async function returnDataForProspect(email, linkedinUrl, jobName, userId, sequen
             } catch (error) {
                 returnedObject.personName = linkedinUrl
                 returnedObject.company = "Bad Data"
-                returnedObject.sequence = "Bad Data"
+                returnedObject.sequence = sequenceName
                 returnedObject.stage = "Bad Data"
                 returnedObject.lastContacted = "Bad Data"
             }
@@ -185,7 +185,7 @@ async function returnDataForProspect(email, linkedinUrl, jobName, userId, sequen
             } catch (error) {
                 returnedObject.personName = "Bad Data"
                 returnedObject.company = "Bad Data"
-                returnedObject.sequence = "Bad Data"
+                returnedObject.sequence = sequenceName
                 returnedObject.stage = "Bad Data"
                 returnedObject.lastContacted = "Bad Data"
             }
@@ -196,7 +196,7 @@ async function returnDataForProspect(email, linkedinUrl, jobName, userId, sequen
         console.log(error);
         returnedObject.personName = "Bad-Data"
         returnedObject.company = "Bad-Data"
-        returnedObject.sequence = "Bad-Data"
+        returnedObject.sequence = sequenceName
         returnedObject.stage = "Bad-Data"
         returnedObject.lastContacted = "Bad-Data"
         return returnedObject

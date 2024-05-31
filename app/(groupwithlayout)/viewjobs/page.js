@@ -3,10 +3,14 @@
 import Navbar from "@/app/ui/Navbar";
 import JobsStatusTable from "@/app/ui/JobsStatusTable";
 import grabDataFromJobName from '@/app/lib/query';
+import { auth } from "@clerk/nextjs";
 
-export default async function ViewJobs() {
+export default async function ViewJobs({ searchParams }) {
+
+    console.log(searchParams.jobName)
     var create = []
-    create = await grabDataFromJobName("cache layer gang@1717104725565", "user_2exb4kICgWwUqF5A5Ghh7gZtUpU")
+    const { userId } = auth();
+    create = await grabDataFromJobName(searchParams.jobName, userId)
     console.log("here  ->" + create)
     return (
         <div className="min-w-full min-h-screen flex flex-col">
