@@ -4,9 +4,9 @@ import Navbar from "@/app/ui/Navbar";
 import JobsStatusTable from "@/app/ui/JobsStatusTable";
 import grabDataFromJobName from '@/app/lib/query';
 import { auth } from "@clerk/nextjs";
+import { extractStringBeforeLastAt } from "@/app/lib/random"
 
 export default async function ViewJobs({ searchParams }) {
-
     console.log(searchParams.jobName)
     var create = []
     const { userId } = auth();
@@ -14,7 +14,7 @@ export default async function ViewJobs({ searchParams }) {
     console.log("here  ->" + create)
     return (
         <div className="min-w-full min-h-screen flex flex-col">
-            <Navbar url={`Email Jobs / Job Status / "inbound leads"`} />
+            <Navbar url={`Email Jobs / Job Status / "${extractStringBeforeLastAt(searchParams.jobName)}"`} />
             <div className="flex-grow overflow-hidden">
                 <JobsStatusTable processedJobs={create} />
             </div>
