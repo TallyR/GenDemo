@@ -1,13 +1,11 @@
 'use client';
 
 //import Link from 'next/link';
-import { grabUserJobs } from '@/app/lib/actions';
 
 import Image from "next/image";
 import Link from 'next/link';
 import { libre_caslon_display } from '@/app/ui/fonts';
 import { libre_caslon_display_bold } from '@/app/ui/fonts';
-import Navbar from "@/app/ui/Navbar";
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid'
 import { useState } from 'react';
 
@@ -16,53 +14,56 @@ function isSubset(str1, str2) {
     str1 = str1.toLowerCase();
     str2 = str2.toLowerCase();
 
-    for (let i = 0; i < str2.length; i++) {
-        if (str1.indexOf(str2[i]) === -1) {
-            // If any character of str2 is not found in str1, return false
-            return false;
-        }
-    }
-    // If all characters of str2 are found in str1, return true
-    return true;
+    // Check if str1 contains str2 as a continuous subset
+    return str1.includes(str2);
 }
 
-export default function ProspectTable({ jsxEntries }) {
-
+export default function JobsStatusTable({ processedJobs }) {
     const [searchTerm, setSearchTerm] = useState('');
-    var filteredJsxEntries = jsxEntries.filter(trav => {
-        return isSubset(trav.key, searchTerm)
+    
+    var filteredJsxEntries = processedJobs.map(trav => {
+        if (isSubset(trav.personName, searchTerm) || isSubset(trav.company, searchTerm) || isSubset(trav.sequence, searchTerm) || isSubset(trav.stage, searchTerm) || isSubset(trav.lastContacted, searchTerm)) {
+            return (<tr className="border rounded-lg" key={trav.personName}>
+                <th scope="row" className="px-5 py-2 font-medium">
+                    {trav.personName}
+                </th>
+                <td className="px-5 py-2">
+                    {trav.company}
+                </td>
+                <td className="px-5 py-2">
+                    {trav.sequence}
+                </td>
+                <td className="px-5 py-2">
+                    {trav.stage}
+                </td>
+                <td className="px-5 py-2">
+                    {trav.lastContacted}
+                </td>
+                <td className="px-5 py-2">
+                    <Link className={trav.personName != "Bad Data" && trav.personName != "Bad-Data" ? "text-blue-700" : "text-red-500"} href={trav.linkedin} rel="noopener noreferrer" target="_blank"> {trav.linkedin} </Link>
+                </td>
+            </tr>
+            )
+        }
     })
 
-    /*
-        This could def live on the server
-    */
-
-    // const jsxTableEntries = jobData.map(jobData)
     return (
         <div className="mb-4">
             <div className="pl-16 pt-8 pr-2 flex">
-                <div className="relative flex flex-1 flex-shrink-0">
+                <div className="relative flex flex-1 flex-shrink-0 pr-16">
                     <label htmlFor="search" className="sr-only">
                         Search
                     </label>
                     <input
-                        className="peer block w-full rounded-lg border border-black py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
+                        className="peer block w-full rounded-lg border border-black py-[20px] pl-10 text-sm outline-2 placeholder:text-gray-500"
                         onChange={(e) => {
                             console.log(e.target.value)
-                            setSearchTerm(e.target.value)}}
+                            setSearchTerm(e.target.value)
+                        }}
                         value={searchTerm}
-                        placeholder="Find past searches..."
+                        placeholder="Search for a person, a company etc."
                     />
                     <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
-                </div>
-                <div className="flex flex-row-reverse pr-16 pl-20">
-                    <Link
-                        type="button"
-                        href="/newmailmerge"
-                        className="whitespace-nowrap rounded-lg bg-indigo-600 px-4 py-4 text-sm text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                    >
-                        New Email Merge
-                    </Link>
                 </div>
             </div>
             <div className="pr-2">
@@ -73,16 +74,22 @@ export default function ProspectTable({ jsxEntries }) {
                                 <thead className="text-xs text-gray-700  dark:text-gray-400">
                                     <tr>
                                         <th scope="col" className="px-6 py-3 text-black">
-                                            Search name
+                                            Prospect Name
                                         </th>
                                         <th scope="col" className="px-6 py-3 text-black">
-                                            Date
+                                            Company
                                         </th>
                                         <th scope="col" className="px-6 py-3 text-black">
-                                            Current Progress
+                                            Sequence
                                         </th>
                                         <th scope="col" className="px-6 py-3 text-black">
-                                            View Results
+                                            Stage
+                                        </th>
+                                        <th scope="col" className="px-6 py-3 text-black">
+                                            Last Contacted
+                                        </th>
+                                        <th scope="col" className="px-6 py-3 text-black">
+                                            LinkedIn
                                         </th>
                                     </tr>
                                 </thead>

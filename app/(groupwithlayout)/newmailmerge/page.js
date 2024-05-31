@@ -69,6 +69,11 @@ export default function NewMailMerge() {
             setErrorMessage(`You haven't created any email sequences yet, please visit the "AI Sequences" tab`)
             setErrorModal(true)
             setButtonMessage('Submit')
+        } else if(state.error === "file_failed_parse") {
+            setErrorTitle('Bad CSV File')
+            setErrorMessage(`There is something wrong with your CSV file`)
+            setErrorModal(true)
+            setButtonMessage('Submit')
         }
     }, [state]);
 

@@ -506,7 +506,7 @@ export async function processFile(prevState, formData) {
 
         retObj.parsedArray = file_parsed
     } catch (error) {
-        retObj.error = "Failed to parse"
+        retObj.error = "file_failed_parse"
     }
     return retObj;
 }
