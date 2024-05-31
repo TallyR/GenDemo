@@ -57,18 +57,18 @@ export default async function Prospecting() {
     console.log(processedJobs);
     const jsxEntries = processedJobs.map(trav => {
         return (
-            <tr className="border rounded-lg" key={trav.jobKey}>
-                <th scope="row" className="px-5 py-2 font-medium">
+            <tr className="border rounded-lg text-xs" key={trav.jobKey}>
+                <td className="px-6 py-2 font-medium">
                     {trav.jobTitle}
-                </th>
-                <td className="px-5 py-2">
+                </td>
+                <td className="px-6 py-2">
                     {trav.jobDate}
                 </td>
                 <td className="px-6 py-2">
                     <button
                         type="button"
                         disabled={true}
-                        className="rounded-md bg-indigo-50 px-3.5 py-2.5 text-sm font-semibold text-indigo-600 shadow-sm"
+                        className="rounded-md bg-indigo-50 px-3.5 py-2.5 text-xs font-semibold text-indigo-600 shadow-sm"
                     >
                         {trav.jobState}
                     </button>
@@ -77,7 +77,7 @@ export default async function Prospecting() {
                     <Link
                         type="button"
                         href="/viewjobs"
-                        className="whitespace-nowrap rounded-lg bg-indigo-600 px-3.5 py-2.5 text-sm text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                        className="whitespace-nowrap rounded-lg bg-indigo-600 px-3.5 py-2.5 text-xs text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                     >
                         results
                     </Link>
