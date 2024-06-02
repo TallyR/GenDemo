@@ -3,40 +3,36 @@
 import Link from 'next/link';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid'
 import { useState } from 'react';
+import NewSequenceModal from "@/app/ui/NewSequenceModal";
 
 function isSubset(str1, str2) {
-    // Convert strings to lowercase for case-insensitive comparison
     str1 = str1.toLowerCase();
     str2 = str2.toLowerCase();
-
     for (let i = 0; i < str2.length; i++) {
         if (str1.indexOf(str2[i]) === -1) {
-            // If any character of str2 is not found in str1, return false
             return false;
         }
     }
-    // If all characters of str2 are found in str1, return true
     return true;
 }
 
 function extractStringBeforeLastAt(input) {
     // Find the index of the last occurrence of '@'
     const lastIndex = input.lastIndexOf('@');
-
     // Extract the substring before the last '@'
     const extractedString = input.substring(0, lastIndex);
-
     return extractedString;
 }
 
-export default function ProspectTable({ jsxEntries, triggerModal }) {
+export default function ProspectTable({ jsxEntries }) {
     const [searchTerm, setSearchTerm] = useState('');
     jsxEntries = jsxEntries.filter(trav => {
         return isSubset(trav.sequenceName, searchTerm)
     })
-    
-    console.log("I HATE JAVASCRIPT")
-    console.log(jsxEntries)
+    //error modal handling
+    const [showErrorModal, setErrorModal] = useState(false)
+    const [errorTitle, setErrorTitle] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
     var filteredJsxEntries = jsxEntries.map(trav => {
         return (
             <tr className="border rounded-lg" key={trav.sequenceName}>
@@ -52,16 +48,16 @@ export default function ProspectTable({ jsxEntries, triggerModal }) {
                         disabled={false}
                         href={{ pathname: "/aisequences/editsequence", query: { sequenceName: trav.sequenceName } }}
                         className="flex items-center justify-center rounded-md bg-indigo-600 px-6 py-2.5 w-1/2 text-sm text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                        >
+                    >
                         Edit
                     </Link>
                 </td>
             </tr>
         )
     })
-
     return (
         <div className="mb-4">
+            <NewSequenceModal onExit={setErrorModal} showSelf={showErrorModal} errorTitle={errorTitle} errorMessage={errorMessage} />
             <div className="pl-16 pt-8 pr-2 flex">
                 <div className="relative flex flex-1 flex-shrink-0">
                     <label htmlFor="search" className="sr-only">
@@ -71,7 +67,8 @@ export default function ProspectTable({ jsxEntries, triggerModal }) {
                         className="peer block w-full rounded-lg border border-black py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
                         onChange={(e) => {
                             console.log(e.target.value)
-                            setSearchTerm(e.target.value)}}
+                            setSearchTerm(e.target.value)
+                        }}
                         value={searchTerm}
                         placeholder="Find past sequences..."
                     />
@@ -82,7 +79,7 @@ export default function ProspectTable({ jsxEntries, triggerModal }) {
                         type="button"
                         onClick={(e) => {
                             e.preventDefault()
-                            triggerModal(true)
+                            setErrorModal(true)
                         }}
                         className="whitespace-nowrap rounded-lg bg-indigo-600 px-4 py-4 text-sm text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                     >
