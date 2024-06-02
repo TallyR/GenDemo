@@ -35,11 +35,10 @@ export default function NewSequenceModal({ errorTitle, errorMessage, showSelf, o
                             enterTo="opacity-100 translate-y-0 sm:scale-100"
                             leave="ease-in duration-200"
                             leaveFrom="opacity-100 translate-y-0 sm:scale-100"
-                            leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                        >
-                            <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
+                            leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+                            <Dialog.Panel className="rounded-lg bg-white p-5 text-left shadow-xl w-[800px] transition-all">
                                 {saving ? <div className="flex flex-col justify-center items-center h-full"><RingLoader className="w-full" /><label className="pt-5">{`Creating "${sequence}"`}</label></div> :
-                                    <div>
+                                    <div className="">
                                         <div>
                                             <div className={clsx((success === false) ? "mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100" : "mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100")}>
                                                 <BoltIcon className="h-6 w-6 text-green-600" aria-hidden="true" />
@@ -69,17 +68,17 @@ export default function NewSequenceModal({ errorTitle, errorMessage, showSelf, o
                                             />
                                         </div>
                                         <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900 mt-3">
-                                            Describe the goal of this email
+                                            Describe your product, it's selling points and the goal of this email sequence
                                         </label>
                                         <div className="mt-2">
                                             <textarea
-                                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                                placeholder="We are selling an AI SDR, a tool that automates outbound emails for you. The goal is to get a prospect to take a discovery call with me."
+                                                className="block w-full urounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                placeholder={`##Product\nWe are selling an AI sequencer that offers way better personalization that Apollo or ZoomInfo\n\n##Selling Points\n1. Higher Deliverability due to AI writing custom messages and by passing spam filters.\n2. Higher Personalization === Higher Conversion Rates\n3. Automatically sends emails during recipients working hours.\n\n##Goal\nTo get people to take a discovery with our sales team`}
                                                 onChange={(e) => {
                                                     setGoal(e.target.value)
                                                 }}
                                                 value={goal}
-                                                rows={4}
+                                                rows={12}
                                             />
                                         </div>
                                         <div className="mt-5 sm:mt-6">
