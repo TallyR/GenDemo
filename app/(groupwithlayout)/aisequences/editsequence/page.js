@@ -238,11 +238,11 @@ export default function NewSequence({ searchParams }) {
                                 {extractStringBeforeLastAt(sequenceName)}
                             </label>
                             <label className="block text-sm font-medium text-gray-900 mb-2 mt-2">
-                                Goal
+                                Sequence Information
                             </label>
-                            <label className="text-m font-medium">
-                            {goal}
-                            </label>
+                            <div className="text-xs rounded-md border-0 p-2 max-h-36 bg-zinc-100 overflow-y-auto block ring-inset ring-gray-300">
+                                {goal}
+                            </div>
                             <div className="flex mt-2 items-center">
                                 <label className="block text-sm font-medium leading-6 text-gray-900">
                                     Sequence steps

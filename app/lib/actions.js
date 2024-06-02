@@ -515,26 +515,22 @@ export async function processFile(prevState, formData) {
 export async function processSequences(prevState, formData) {
     noStore();
     var retObj = { parsedArray: null, error: null }
-
     //check if both fields are full
     if (formData.get('sequence_name') == '') {
         console.log('HERE!')
         retObj.error = 'NO_SEQUENCE_NAME'
         return retObj;
     }
-
     if (formData.get('subject_line') == '') {
         retObj.error = 'NO_SUBJECT_LINE'
         return retObj;
     }
-
     //save it to the database (likely need error check for steps)
     const { userId } = auth();
     const mongodbClient = new MongoClient(process.env.MONGO_DB_CONNECTION_STRING, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
     });
-
     try {
         await mongodbClient.connect()
         var timestamp = new Date().getTime();
@@ -549,9 +545,7 @@ export async function processSequences(prevState, formData) {
         retObj.status = "JUST_SAVED" //show the user it was saved
         await mongodbClient.close()
     } catch (error) {
-
     }
-
     return retObj;
 }
 
@@ -564,7 +558,6 @@ export async function createNewSequence(newSequenceName, goal) {
     });
     var timestamp = new Date().getTime();
     const seqName = newSequenceName + "@" + timestamp;
-
     //save sequence
     try {
         await mongodbClient.connect()
@@ -581,7 +574,6 @@ export async function createNewSequence(newSequenceName, goal) {
     } catch (error) {
 
     }
-
     //re-direct to edit page
     redirect(`/aisequences/editsequence?sequenceName=${encodeURIComponent(seqName)}`)
 }

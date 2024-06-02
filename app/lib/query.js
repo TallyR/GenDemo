@@ -309,7 +309,7 @@ export default async function grabDataFromJobName(jobTitle, userId) {
         const values = await Promise.all(requests)
         //console.log(values)
         printUnixTime()
-        client.close()
+        await client.close()
         noStore();
         return values
     } catch (error) {

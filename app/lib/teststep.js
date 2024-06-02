@@ -2,6 +2,7 @@
 
 import { fetchLinkedInProfile } from '@/app/lib/grablinkedin.js'
 import OpenAI from "openai";
+import { MongoClient } from 'mongodb'
 
 //functions that repopulate the new email with LinkedIn data
 function replaceAllOccurrences(text, target, replacement) {
@@ -12,28 +13,75 @@ function replaceAllOccurrences(text, target, replacement) {
     return text.split(target).join(replacement);
 }
 
+function printUnixTime() {
+    // Get the current time in milliseconds since January 1, 1970
+    const now = Date.now();
+
+    // Convert milliseconds to seconds
+    const unixTime = Math.floor(now / 1000);
+
+    // Print the Unix time
+    return unixTime;
+}
+
 async function grabLinkedinDataAndGenerateEmail(linkedinUrl, subject_line_template, body_template) {
     //grab data from linked
-    var lData = await fetchLinkedInProfile(linkedinUrl)
+    const client = new MongoClient(process.env.MONGO_DB_CONNECTION_STRING, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        connectTimeoutMS: 65000, //increased timeout for shakey network conditions
+    });
+    await client.connect();
+    const database = await client.db('users');
+    const linkedinCollection = await database.collection('linkedin')
+    const badLinkedinCollection = await database.collection('badLinkedin')
+    var lData = '' //the data to be billed
+    const query = {
+        linkedinUrl: linkedinUrl
+    }
+    if ((await badLinkedinCollection.findOne(query)) != null) {
+        console.log('bad cache hit!')
+        await client.close()
+        throw Error("bad linkedin, was discovered with bad cache!"); //bad linkedin
+    }
+    lData = await linkedinCollection.findOne(query);
+    if (lData != null) {
+        console.log('hit cache!')
+        lData = lData.data
+    } else {
+        console.log('cache miss - grabbing from Nubela then saving!')
+        try {
+            lData = await fetchLinkedInProfile(linkedinUrl)
+            await linkedinCollection.insertOne({
+                linkedinUrl: linkedinUrl,
+                creationTime: printUnixTime(),
+                data: lData
+            })
+        } catch (error) {
+            console.log('Nubela said it was a bad linkedin, caching and exiting!')
+            await badLinkedinCollection.insertOne({
+                linkedinUrl: linkedinUrl,
+            })
+            await client.close()
+            throw error;
+        }
+    }
     var linkedinData = {
         firstName: (lData.name.split(" "))[0],
         lastName: (lData.name.split(" "))[1],
         companyName: lData.currentCompanyDescription.name,
         fullName: lData.name
     }
-
     //populating subject line template
     subject_line_template = replaceAllOccurrences(subject_line_template, "{{first_name}}", linkedinData.firstName)
     subject_line_template = replaceAllOccurrences(subject_line_template, "{{last_name}}", linkedinData.companyName)
     subject_line_template = replaceAllOccurrences(subject_line_template, "{{full_name}}", linkedinData.fullName)
     subject_line_template = replaceAllOccurrences(subject_line_template, "{{company_name}}", linkedinData.companyName)
-
     //populating body template
     body_template = replaceAllOccurrences(body_template, "{{first_name}}", linkedinData.firstName)
     body_template = replaceAllOccurrences(body_template, "{{last_name}}", linkedinData.companyName)
     body_template = replaceAllOccurrences(body_template, "{{full_name}}", linkedinData.fullName)
     body_template = replaceAllOccurrences(body_template, "{{company_name}}", linkedinData.companyName)
-
     return {
         subject_line: subject_line_template,
         body: body_template,
