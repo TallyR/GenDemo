@@ -225,7 +225,7 @@ export default function Example({ searchParams }) {
         <div className="min-w-full h-dvh" key={`${searchParams.name} main_app`}>
             <Navbar url={`AI Sequences / Edit Sequence / ${!editStep ? "Add" : "Edit"} Step / ${searchParams.name}`} />
             <ErrorModal onExit={setErrorModal} showSelf={showErrorModal} errorTitle={errorTitle} errorMessage={errorMessage} />
-            <div className="shadow-m rounded-lg border-2 p-4 border-black m-2">
+            <div className="shadow-m rounded-lg border-2 p-4 border-black m-6">
                 <label className="block text-m leading-6 text-gray-900">
                     Fill in a "{stepName}" example to teach Tally
                 </label>
