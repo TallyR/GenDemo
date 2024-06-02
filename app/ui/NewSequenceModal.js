@@ -73,7 +73,7 @@ export default function NewSequenceModal({ errorTitle, errorMessage, showSelf, o
                                         <div className="mt-2">
                                             <textarea
                                                 className="block w-full urounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                                placeholder={`##Product\nWe are selling an AI sequencer that offers way better personalization that Apollo or ZoomInfo\n\n##Selling Points\n1. Higher Deliverability due to AI writing custom messages and by passing spam filters.\n2. Higher Personalization === Higher Conversion Rates\n3. Automatically sends emails during recipients working hours.\n\n##Goal\nTo get people to take a discovery with our sales team`}
+                                                placeholder={`##Product\nWe are selling an AI sequencer that offers way better personalization that Apollo or ZoomInfo\n\n##Selling Points\n1. Higher Deliverability due to AI writing custom messages and by passing spam filters.\n2. Higher Personalization === Higher Conversion Rates\n3. Automatically sends emails during recipients working hours.\n\n##Goal\nTo get people to take a discovery call with our sales team`}
                                                 onChange={(e) => {
                                                     setGoal(e.target.value)
                                                 }}
