@@ -4,6 +4,8 @@ import Image from "next/image";
 import Link from 'next/link';
 import { libre_caslon_display_bold } from '@/app/ui/fonts';
 
+//test for vercel
+
 export default function Navbar({ url, button = false }) {
     return (
         <div className="min-w-full">

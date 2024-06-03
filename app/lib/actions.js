@@ -129,7 +129,7 @@ export async function testWrite(jobData) {
         await client.connect();
         const database = await client.db('users');
         const userCollection = await database.collection('userData');
-        const jobCollection = await database.collection('jobsQueue');
+        const jobCollection = await database.collection(process.env.JOB_QUEUE_COLLECTION);
         const query = { userId: userId };
         var foundUserOrNeedToCreateOne = await userCollection.findOne(query);
 
@@ -161,7 +161,8 @@ export async function testWrite(jobData) {
         const jobQueueEntry = {
             jobData: jobData.jobDataArray,
             jobName: jobData.jobTitle,
-            userId: foundUserOrNeedToCreateOne.userId
+            userId: foundUserOrNeedToCreateOne.userId,
+            sequenceName: jobData.sequenceName
         }
         await jobCollection.insertOne(jobQueueEntry)
 
@@ -223,15 +224,15 @@ export async function disconnectGmail() {
             refresh_token: foundUser.gmailRefreshToken,
         });
         //refreshed accessToken + revoke
-        await oauth2Client.refreshAccessToken(); 
+        await oauth2Client.refreshAccessToken();
         await oauth2Client.revokeCredentials();
-        
+
 
         //now remove from user's profile
         var updatedUser = await userCollection.updateOne(query, {
             $set: {
                 gmailAccessToken: 'NULL',
-                gmailRefreshToken: 'NULL', 
+                gmailRefreshToken: 'NULL',
                 gmailAlias: 'NULL'
             }
         });
@@ -455,6 +456,8 @@ export async function processFile(prevState, formData) {
     noStore();
     var retObj = { parsedArray: null, error: null }
 
+    console.log(formData)
+
     //reset form
     if (formData.type && formData.type === 'RESET') {
         return formData.payload;
@@ -467,13 +470,21 @@ export async function processFile(prevState, formData) {
         return retObj
     }
 
+    if(formData.get("sequence") === 'No sequences created') {
+        console.log("error")
+        retObj.error = 'no_sequence_created'
+        return retObj
+    }
+
+    console.log(formData)
+
     //check if email is connected
     //var checkEmailConnected = await checkIfEmailConnected() // HAD TO CHANGE TO TEMPORARILY DEPRECATE UNIPILE, will reverse soon ;)
     var checkEmailConnected = await checkIfGmailIsConnected()
     if (!checkEmailConnected.connected) {
         console.log('email not connected')
         retObj.error = 'no_email_connected'
-        return retObj
+        return retObj 
     }
 
     //new file uploaded
@@ -495,7 +506,250 @@ export async function processFile(prevState, formData) {
 
         retObj.parsedArray = file_parsed
     } catch (error) {
-        retObj.error = "Failed to parse"
+        retObj.error = "file_failed_parse"
     }
     return retObj;
+}
+
+//handle sequence modifications + creation of new ones
+export async function processSequences(prevState, formData) {
+    noStore();
+    var retObj = { parsedArray: null, error: null }
+    //check if both fields are full
+    if (formData.get('sequence_name') == '') {
+        console.log('HERE!')
+        retObj.error = 'NO_SEQUENCE_NAME'
+        return retObj;
+    }
+    if (formData.get('subject_line') == '') {
+        retObj.error = 'NO_SUBJECT_LINE'
+        return retObj;
+    }
+    //save it to the database (likely need error check for steps)
+    const { userId } = auth();
+    const mongodbClient = new MongoClient(process.env.MONGO_DB_CONNECTION_STRING, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    });
+    try {
+        await mongodbClient.connect()
+        var timestamp = new Date().getTime();
+        const database = mongodbClient.db('users')
+        const sequenceCollection = await database.collection('emailSequences')
+        const savedEmailSequence = {
+            userId: userId,
+            sequenceName: formData.get('sequence_name') + "@" + timestamp,
+            steps: [] //need to update this later with the state stuff
+        }
+        await sequenceCollection.insertOne(savedEmailSequence)
+        retObj.status = "JUST_SAVED" //show the user it was saved
+        await mongodbClient.close()
+    } catch (error) {
+    }
+    return retObj;
+}
+
+export async function createNewSequence(newSequenceName, goal) {
+    noStore();
+    const { userId } = auth();
+    const mongodbClient = new MongoClient(process.env.MONGO_DB_CONNECTION_STRING, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    });
+    var timestamp = new Date().getTime();
+    const seqName = newSequenceName + "@" + timestamp;
+    //save sequence
+    try {
+        await mongodbClient.connect()
+        const database = mongodbClient.db('users')
+        const sequenceCollection = await database.collection('emailSequences')
+        const savedEmailSequence = {
+            userId: userId,
+            sequenceName: seqName,
+            goal: goal,
+            steps: [] //need to update this later with the state stuff
+        }
+        await sequenceCollection.insertOne(savedEmailSequence)
+        await mongodbClient.close()
+    } catch (error) {
+
+    }
+    //re-direct to edit page
+    redirect(`/aisequences/editsequence?sequenceName=${encodeURIComponent(seqName)}`)
+}
+
+export async function grabSequenceData(sequenceName) {
+    noStore();
+    const { userId } = auth();
+    const mongodbClient = new MongoClient(process.env.MONGO_DB_CONNECTION_STRING, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    });
+    var timestamp = new Date().getTime();
+    const seqName = sequenceName + "@" + timestamp;
+
+    const query = {
+        userId: userId,
+        sequenceName: sequenceName
+    }
+    var grabbedObj = {}
+
+    //save sequence
+    try {
+        await mongodbClient.connect()
+        const database = mongodbClient.db('users')
+        const sequenceCollection = await database.collection('emailSequences')
+        grabbedObj = await sequenceCollection.findOne(query);
+        await mongodbClient.close()
+    } catch (error) {
+
+    }
+
+    return JSON.parse(JSON.stringify(grabbedObj));
+}
+
+export async function saveStep(sequenceName, stepName, stepTemplate, stepExampleSubjectLines, stepExampleBodys, subjectLine, position = -1) {
+    console.log("Position:")
+    console.log(position)
+    console.log("Subject Line:")
+    console.log(subjectLine)
+
+    noStore();
+    const { userId } = auth();
+    const mongodbClient = new MongoClient(process.env.MONGO_DB_CONNECTION_STRING, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    });
+    var timestamp = new Date().getTime();
+
+    const query = {
+        userId: userId,
+        sequenceName: sequenceName
+    }
+
+    await mongodbClient.connect()
+    const database = mongodbClient.db('users')
+    const sequenceCollection = await database.collection('emailSequences')
+    console.log("sdjfkhsdf")
+    console.log(position)
+
+    try {
+        if (position == -1) {
+            //grab and update
+            var grabbedObj = await sequenceCollection.findOne(query);
+            var newStepArray = grabbedObj.steps === null ? [] : grabbedObj.steps
+            newStepArray.push({
+                step_name: stepName,
+                step_subject_line: subjectLine,
+                step_template: stepTemplate,
+                step_example_subject_lines: stepExampleSubjectLines,
+                step_example_bodys: stepExampleBodys,
+            })
+            const updateDoc = {
+                $set: {
+                    steps: newStepArray
+                },
+            }
+            const updatedUser = await sequenceCollection.updateOne(query, updateDoc);
+            await mongodbClient.close()
+        } else {
+            //editing step
+            console.log("EDITING")
+            var grabbedObj = await sequenceCollection.findOne(query);
+            grabbedObj = grabbedObj.steps.map((trav, index) => {
+                if (index != position) {
+                    return trav
+                }
+                return ({
+                    step_name: stepName,
+                    step_subject_line: subjectLine,
+                    step_template: stepTemplate,
+                    step_example_subject_lines: stepExampleSubjectLines,
+                    step_example_bodys: stepExampleBodys,
+                })
+            })
+            const updateDoc = {
+                $set: {
+                    steps: grabbedObj
+                },
+            }
+            const updatedUser = await sequenceCollection.updateOne(query, updateDoc);
+            await mongodbClient.close()
+        }
+    }
+    catch (error) {
+        console.log(error)
+        return; //dont redirect
+    }
+    redirect(`/aisequences/editsequence?sequenceName=${encodeURIComponent(sequenceName)}`)
+}
+
+export async function removeStep(sequenceName, stepPosition) {
+    noStore();
+    const { userId } = auth();
+    const mongodbClient = new MongoClient(process.env.MONGO_DB_CONNECTION_STRING, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    });
+    const query = {
+        userId: userId,
+        sequenceName: sequenceName
+    }
+    await mongodbClient.connect()
+    const database = mongodbClient.db('users')
+    const sequenceCollection = await database.collection('emailSequences')
+    try {
+        //removing step
+        console.log("EDITING")
+        var grabbedObj = await sequenceCollection.findOne(query);
+        grabbedObj = grabbedObj.steps.filter((trav, index) => {
+            if (index != stepPosition) {
+                return true
+            } 
+            return false
+        })
+        const updateDoc = {
+            $set: {
+                steps: grabbedObj
+            },
+        }
+        const updatedUser = await sequenceCollection.updateOne(query, updateDoc);
+        await mongodbClient.close()
+    }
+    catch (error) {
+        console.log(error)
+        return; //dont redirect
+    }
+    redirect(`/aisequences/editsequence?sequenceName=${encodeURIComponent(sequenceName)}`)
+}
+
+
+export async function grabEmailSequences() {
+    noStore();
+    const { userId } = auth();
+    const mongodbClient = new MongoClient(process.env.MONGO_DB_CONNECTION_STRING, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    });
+    const query = {
+        userId: userId,
+    }
+    await mongodbClient.connect()
+    const database = await mongodbClient.db('users')
+    const sequenceCollection = await database.collection('emailSequences')
+    try {
+        var allUserSequences = await sequenceCollection.find(query);
+        var allSequences = await allUserSequences.toArray()
+        allSequences = allSequences.map((e) => {console.log(e) 
+            return ({sequenceName: e.sequenceName, size: e.steps.length})})
+        console.log(allSequences)
+        await mongodbClient.close()
+        return allSequences;
+    }
+    catch (error) {
+        console.log("error")
+        console.log(error)
+        await mongodbClient.close()
+        return; //dont redirect
+    }
 }

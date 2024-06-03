@@ -3,6 +3,7 @@
 import Navbar from "@/app/ui/Navbar";
 import ProspectTable from "@/app/ui/ProspectTable";
 import { grabUserJobs } from '@/app/lib/actions';
+import Link from 'next/link';
 
 function parseAndConvertDate(input) {
     // Split the input string by '@'
@@ -37,18 +38,16 @@ function extractStringBeforeLastAt(input) {
 
 
 export default async function Prospecting() {
-    //const [searchTerm, setSearchTerm] = useState('')
-    //process job data from the backend
     var res = await grabUserJobs();
     console.log(res)
-    if(!res) {
+    if (!res) {
         res = [] //bad request
     }
     const reversed = res.reverse()
 
     const processedJobs = reversed.map(trav => {
         return {
-            jobTitle: extractStringBeforeLastAt(trav.jobTitle),
+            jobTitle:trav.jobTitle,
             jobState: trav.status,
             jobDate: parseAndConvertDate(trav.jobTitle),
             jobKey: trav.jobTitle
@@ -56,26 +55,35 @@ export default async function Prospecting() {
     })
 
     console.log(processedJobs);
-
-    //should probably move this to ProspectTable.js
-    //  {trav.jobState}
     const jsxEntries = processedJobs.map(trav => {
         return (
-            <tr className="border rounded-lg" key={trav.jobKey}>
-                <th scope="row" className="px-5 py-2 font-medium">
-                    {trav.jobTitle}
-                </th>
-                <td className="px-5 py-2">
+            <tr className="border rounded-lg text-xs" key={trav.jobKey}>
+                <td className="px-6 py-2 font-medium">
+                    {extractStringBeforeLastAt(trav.jobTitle)}
+                </td>
+                <td className="px-6 py-2">
                     {trav.jobDate}
                 </td>
                 <td className="px-6 py-2">
                     <button
                         type="button"
                         disabled={true}
-                        className="rounded-md bg-indigo-50 px-3.5 py-2.5 text-sm font-semibold text-indigo-600 shadow-sm"
+                        className="rounded-md bg-indigo-50 px-3.5 py-2.5 text-xs font-semibold text-indigo-600 shadow-sm"
                     >
                         {trav.jobState}
                     </button>
+                </td>
+                <td className="px-6 py-2">
+                    <Link
+                        type="button"
+                        href={{
+                            pathname: "/viewjobs",
+                            query: { jobName: trav.jobTitle }
+                        }}
+                        className="whitespace-nowrap rounded-lg bg-indigo-600 px-3.5 py-2.5 text-xs text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    >
+                        results
+                    </Link>
                 </td>
             </tr>
         )
