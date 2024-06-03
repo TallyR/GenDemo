@@ -200,10 +200,11 @@ export default function NewSequence() {
         if (localStorage.getItem('sequence_name')) {
             setSequenceName(grab)
         }
-        if (searchGrab.get('sequenceName') !== undefined) {
+        if (searchGrab.get('sequenceName') !== "null") {
             localStorage.setItem('sequence_name', searchGrab.get('sequenceName'))
         }
-        console.log("Grabbing")
+        console.log("sdfgdsggdsfgdsgf")
+        console.log(searchGrab.get('asdfasdfds') === "null")
         grabSequenceData(searchGrab.get('sequenceName')).then(e => {
             console.log(e)
             setSequenceName(e.sequenceName)
@@ -218,7 +219,7 @@ export default function NewSequence() {
     }, [])
 
     useEffect(() => {
-        if (searchGrab.get('sequenceName') !== undefined) {
+        if (searchGrab.get('sequenceName') !== "null") {
             localStorage.setItem('sequence_name', sequenceName)
         }
     }, [sequenceName])

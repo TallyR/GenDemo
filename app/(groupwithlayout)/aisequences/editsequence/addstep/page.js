@@ -6,7 +6,7 @@ import { useImmerReducer } from 'use-immer';
 import { useState, useEffect, useRef } from 'react';
 import ErrorModal from "@/app/ui/ErrorModal";
 import clsx from 'clsx';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 const MEMORY_KEY_SUBJECT_LINE = "example_information_subject_line"
 const MEMORY_KEY_TEMPLATE = "example_information_body"
@@ -94,10 +94,11 @@ function reducer(draft, action) {
     }
 }
 
-export default function AddStep({ searchParams }) {
+export default function AddStep() {
 
     const initialState = { template: "", pointerPos: 0, subjectLine: "", subjectLinePointerPos: 0, active: -1, stepName: "" }
     const [state, dispatch] = useImmerReducer(reducer, initialState)
+    const searchGrab = useSearchParams()
 
     //these HAVE to be in order, then execute in order of each other
     useEffect(() => {
@@ -144,13 +145,10 @@ export default function AddStep({ searchParams }) {
 
     //calculating if edit step
     var editStep = false;
-    if (searchParams.editStep === "true") {
+    if (searchGrab.get("editStep") === "true") {
         editStep = true
     }
-
     const router = useRouter();
-
-    console.log(searchParams.position === undefined)
 
     return (
         <div className="min-w-full">
@@ -235,8 +233,8 @@ export default function AddStep({ searchParams }) {
                                     localStorage.removeItem(MEMORY_KEY_SUBJECT_LINE);
                                     localStorage.removeItem(MEMORY_KEY_TEMPLATE);
 
-                                    const editStep = searchParams.editStep === undefined ? false : searchParams.editStep
-                                    const position = searchParams.position === undefined ? '' : searchParams.position
+                                    const editStep = searchGrab.get("editStep") === "null" ? false : searchGrab.get("editStep")
+                                    const position = searchGrab.get("position") === "null" ? '' : searchGrab.get("position")
 
                                     // Prepare the URL and query parameters
                                     const targetUrl = finalCondition ? '/aisequences/editsequence/addstep/example' : '/aisequences/editsequence/addstep/testtemplate';

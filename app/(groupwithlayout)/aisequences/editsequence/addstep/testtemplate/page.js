@@ -7,6 +7,7 @@ import { testEmail } from '@/app/lib/teststep'
 import { RingLoader } from "react-spinners"
 import ErrorModal from "@/app/ui/ErrorModal.js"
 import LoadingModal from "@/app/ui/LoadingModal.js"
+import { useSearchParams } from 'next/navigation';
 
 function wrapTextWithParagraphs(text) {
     // Normalize the text to handle back-to-back newlines by replacing them with a placeholder newline plus double space
@@ -49,10 +50,11 @@ function isLinkedInProfile(url) {
     return pattern.test(url);
 }
 
-export default function TestTemplate({ searchParams }) {
+export default function TestTemplate() {
     //calculating if edit step
+    const searchGrab = useSearchParams()
     var editStep = false;
-    if (searchParams.editStep === "true") {
+    if (searchGrab.get("editStep") === "true") {
         editStep = true
     }
 
@@ -72,8 +74,6 @@ export default function TestTemplate({ searchParams }) {
     useEffect(() => {
         setStepName(localStorage.getItem('step_name'))
     }, []);
-
-    console.log(searchParams.position == '' || searchParams.position === undefined)
 
     return (
         <div className="min-w-full h-dvh">
@@ -137,11 +137,11 @@ export default function TestTemplate({ searchParams }) {
                             setLoadingModal(true)
                             console.log("CALLING HERE")
                             console.log(localStorage.getItem('sequence_name'));
-                            if (searchParams.position == '' || searchParams.position === undefined) {
+                            if (searchGrab.get("position") == '' || searchGrab.get("position") === "null") {
                                 await saveStep(localStorage.getItem('sequence_name'), localStorage.getItem("step_name"), localStorage.getItem("template"), JSON.parse(localStorage.getItem("example_information_subject_line")), JSON.parse(localStorage.getItem("example_information_body")), localStorage.getItem("subject_line"))
                             }
                             else {
-                                await saveStep(localStorage.getItem('sequence_name'), localStorage.getItem("step_name"), localStorage.getItem("template"), JSON.parse(localStorage.getItem("example_information_subject_line")), JSON.parse(localStorage.getItem("example_information_body")), localStorage.getItem("subject_line"), searchParams.position)
+                                await saveStep(localStorage.getItem('sequence_name'), localStorage.getItem("step_name"), localStorage.getItem("template"), JSON.parse(localStorage.getItem("example_information_subject_line")), JSON.parse(localStorage.getItem("example_information_body")), localStorage.getItem("subject_line"), searchGrab.get("position"))
                             }
                         }}
                         className="ml-4 whitespace-nowrap rounded-lg bg-green-600 px-7 py-3 text-sm text-white shadow-sm justify-center text-center hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"

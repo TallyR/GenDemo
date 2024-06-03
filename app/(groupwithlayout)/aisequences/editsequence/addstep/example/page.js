@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 import React from 'react';
 import ErrorModal from "@/app/ui/ErrorModal";
+import { useSearchParams } from 'next/navigation';
 
 /*
     Plan for dynamic state: 
@@ -70,10 +71,11 @@ function hasEmptyStringValue(obj, targetKeys, exampleNumber) {
 //object to keep track of fields
 var trackOfFields = { template: 0, subjectLine: 0 }
 
-export default function Example({ searchParams }) {
+export default function Example() {
     //calculating if edit step
+    const searchGrab = useSearchParams();
     var editStep = false;
-    if (searchParams.editStep === "true") {
+    if (searchGrab.get("editStep") === "true") {
         editStep = true
     }
     const [sLine, setSLine] = useState({})
@@ -196,9 +198,9 @@ export default function Example({ searchParams }) {
     }
     useEffect(() => {
         var exampleNumber = 0;
-        if (searchParams.name === 'Example #1') {
+        if (searchGrab.get("name") === 'Example #1') {
             exampleNumber = 0;
-        } else if (searchParams.name === 'Example #2') {
+        } else if (searchGrab.get("name") === 'Example #2') {
             exampleNumber = 1;
         }
         var prevBody = localStorage.getItem(MEMORY_KEY_TEMPLATE) ? JSON.parse(localStorage.getItem(MEMORY_KEY_TEMPLATE)) : {}
@@ -219,11 +221,11 @@ export default function Example({ searchParams }) {
         setBody(JSON.parse(localStorage.getItem(MEMORY_KEY_TEMPLATE)))
         setSLine(JSON.parse(localStorage.getItem(MEMORY_KEY_SUBJECT_LINE)))
         setStepName(localStorage.getItem("step_name"))
-    }, [searchParams.name]);
+    }, [searchGrab.get("name")]);
 
     return (
-        <div className="min-w-full h-dvh" key={`${searchParams.name} main_app`}>
-            <Navbar url={`AI Sequences / Edit Sequence / ${!editStep ? "Add" : "Edit"} Step / ${searchParams.name}`} />
+        <div className="min-w-full h-dvh" key={`${searchGrab.get("name")} main_app`}>
+            <Navbar url={`AI Sequences / Edit Sequence / ${!editStep ? "Add" : "Edit"} Step / ${searchGrab.get("name")}`} />
             <ErrorModal onExit={setErrorModal} showSelf={showErrorModal} errorTitle={errorTitle} errorMessage={errorMessage} />
             <div className="shadow-m rounded-lg border-2 p-4 border-black m-6">
                 <label className="block text-m leading-6 text-gray-900">
@@ -232,29 +234,29 @@ export default function Example({ searchParams }) {
                 <label className="block text-sm font-semibold m-2 text-gray-900">
                     Subject line
                 </label>
-                <div className="text-xs shadow-m rounded-lg border p-4 border-black m-2 h-1/2" key={`${searchParams.name} subject_line`}>
+                <div className="text-xs shadow-m rounded-lg border p-4 border-black m-2 h-1/2" key={`${searchGrab.get("name")} subject_line`}>
                     {subjectLine}
                 </div>
                 <label className="block text-sm ml-2 font-semibold mt-4 text-gray-900">
                     Body
                 </label>
-                <div className="text-xs shadow-m max-h-[350px] rounded-lg border p-4 border-black m-2 h-1/2 overflow-y-auto" key={searchParams.name}>
+                <div className="text-xs shadow-m max-h-[350px] rounded-lg border p-4 border-black m-2 h-1/2 overflow-y-auto" key={searchGrab.get("name")}>
                     {process}
                 </div>
                 <div className="flex flex-row-reverse pt-2">
                     <Link
                         type="button"
                         href={{
-                            pathname: searchParams.name !== 'Example #2' ? '/aisequences/editsequence/addstep/example' : '/aisequences/editsequence/addstep/testtemplate',
-                            query: { name: 'Example #2', editStep: searchParams.editStep, position: searchParams.position },
+                            pathname: searchGrab.get("name") !== 'Example #2' ? '/aisequences/editsequence/addstep/example' : '/aisequences/editsequence/addstep/testtemplate',
+                            query: { name: 'Example #2', editStep: searchGrab.get("editStep"), position: searchGrab.get("position") },
                         }}
                         onClick={(e) => {
                             var subFields = JSON.parse(localStorage.getItem(MEMORY_KEY_SUBJECT_LINE));
                             var bodyFields = JSON.parse(localStorage.getItem(MEMORY_KEY_TEMPLATE));
                             var exampleNumber = 0;
-                            if (searchParams.name === 'Example #1') {
+                            if (searchGrab.get("name") === 'Example #1') {
                                 exampleNumber = 0;
-                            } else if (searchParams.name === 'Example #2') {
+                            } else if (searchGrab.get("name") === 'Example #2') {
                                 exampleNumber = 1;
                             }
                             //e.preventDefault()
