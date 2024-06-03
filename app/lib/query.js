@@ -161,7 +161,7 @@ async function returnDataForProspect(email, linkedinUrl, jobName, userId, sequen
                 returnedObject.stage = `0 / ${emailSequence.steps.length}`
                 returnedObject.lastContacted = "Not yet"
             } catch (error) {
-                returnedObject.personName = linkedinUrl
+                returnedObject.personName = "Bad Data"
                 returnedObject.company = "Bad Data"
                 returnedObject.sequence = sequenceName
                 returnedObject.stage = "Bad Data"
