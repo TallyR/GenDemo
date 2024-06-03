@@ -593,6 +593,9 @@ export async function grabSequenceData(sequenceName) {
         sequenceName: sequenceName
     }
     var grabbedObj = {}
+    
+    console.log("JDFKDSHFKDHFKDSJHFJKDSH")
+    console.log(query)
 
     //save sequence
     try {

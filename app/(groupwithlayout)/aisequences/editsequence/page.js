@@ -204,6 +204,7 @@ export default function NewSequence({ searchParams }) {
             localStorage.setItem('sequence_name', searchParams.sequenceName)
         }
         console.log("Grabbing")
+        console.log(searchParams.sequenceName)
         grabSequenceData(searchParams.sequenceName).then(e => {
             console.log(e)
             setSequenceName(e.sequenceName)
@@ -212,6 +213,8 @@ export default function NewSequence({ searchParams }) {
             setProcessedSteps(e.steps)
             setProcessRequest(false)
             setGoal(e.goal)
+        }).catch(error => {
+            console.log(error)
         })
     }, [])
 
