@@ -11,7 +11,7 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import { grabSequenceData, removeStep } from "@/app/lib/actions"
 import { RingLoader } from "react-spinners"
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 const initialState = { sequenceName: "", subjectLine: "" }
 
@@ -95,7 +95,7 @@ function processSequenceSteps(stepsArray) {
 }
 
 
-export default function NewSequence({ searchParams }) {
+export default function NewSequence() {
 
 
 
@@ -104,6 +104,7 @@ export default function NewSequence({ searchParams }) {
     const [stateForm, dispatchForm] = useFormState(processSequences, initialState);
     const [state, dispatch] = useImmerReducer(reducer, initialState)
     const [goal, setGoal] = useState('')
+    const searchGrab = useSearchParams()
 
 
     console.log('here')
@@ -199,13 +200,11 @@ export default function NewSequence({ searchParams }) {
         if (localStorage.getItem('sequence_name')) {
             setSequenceName(grab)
         }
-        console.log(searchParams.sequenceName)
-        if (searchParams.sequenceName !== undefined) {
-            localStorage.setItem('sequence_name', searchParams.sequenceName)
+        if (searchGrab.get('sequenceName') !== undefined) {
+            localStorage.setItem('sequence_name', searchGrab.get('sequenceName'))
         }
         console.log("Grabbing")
-        console.log(searchParams.sequenceName)
-        grabSequenceData(searchParams.sequenceName).then(e => {
+        grabSequenceData(searchGrab.get('sequenceName')).then(e => {
             console.log(e)
             setSequenceName(e.sequenceName)
             console.log("steps:")
@@ -219,7 +218,7 @@ export default function NewSequence({ searchParams }) {
     }, [])
 
     useEffect(() => {
-        if (searchParams.sequenceName !== undefined) {
+        if (searchGrab.get('sequenceName') !== undefined) {
             localStorage.setItem('sequence_name', sequenceName)
         }
     }, [sequenceName])
@@ -317,7 +316,7 @@ export default function NewSequence({ searchParams }) {
                                                                     <button
                                                                         type="button"
                                                                         onClick={async (e) => {
-                                                                            await removeStep(searchParams.sequenceName, index)
+                                                                            await removeStep(searchGrab.get('sequenceName'), index)
                                                                             location.reload()
                                                                         }}
                                                                         className="ml-2 whitespace-nowrap rounded-lg bg-red-600 px-2 py-1 text-xs text-white shadow-sm justify-center text-center hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
