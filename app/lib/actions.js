@@ -129,7 +129,7 @@ export async function testWrite(jobData) {
         await client.connect();
         const database = await client.db('users');
         const userCollection = await database.collection('userData');
-        const jobCollection = await database.collection('jobsQueue_DEV2'); //NEED TO CHANGE THIS!!!!!!!!!!
+        const jobCollection = await database.collection(process.env.JOB_QUEUE_COLLECTION);
         const query = { userId: userId };
         var foundUserOrNeedToCreateOne = await userCollection.findOne(query);
 

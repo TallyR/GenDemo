@@ -42,12 +42,12 @@ export default function ProspectTable({ jsxEntries }) {
                 <td className="w-1/4 px-5 py-2">
                     <div className="pl-1">{trav.size}</div>
                 </td>
-                <td className="w-1/4 px-5 py-2">
+                <td className="w-1/4 px-5 py-1">
                     <Link
                         type="button"
                         disabled={false}
                         href={{ pathname: "/aisequences/editsequence", query: { sequenceName: trav.sequenceName } }}
-                        className="flex items-center justify-center rounded-md bg-indigo-600 px-6 py-2.5 w-1/2 text-sm text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                        className="flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2 w-1/2 text-sm text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                     >
                         Edit
                     </Link>
@@ -89,9 +89,9 @@ export default function ProspectTable({ jsxEntries }) {
             </div>
             <div className="pr-2">
                 <div className="pl-16 pt-8 pr-16">
-                    <div className="min-w-full max-h-80 border-black-500/75 shadow-m rounded-lg border-2 border-black overflow-y-scroll">
+                    <div className="min-w-full max-h-[450px] border-black-500/75 shadow-m rounded-lg border-2 border-black overflow-y-scroll">
                         <div className="relative overflow-x-auto">
-                            <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-black ">
+                            <table className="w-full text-xs text-left rtl:text-right text-gray-500 dark:text-black ">
                                 <thead className="text-xs text-gray-700  dark:text-gray-400">
                                     <tr>
                                         <th scope="col" className="px-6 py-3 text-black">

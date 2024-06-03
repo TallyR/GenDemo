@@ -113,11 +113,10 @@ async function returnDataForProspect(email, linkedinUrl, jobName, userId, sequen
         lastContacted: "",
         linkedin: linkedinUrl
     }
-
     try {
         await client.connect();
         const database = await client.db('users');
-        const emailCollection = await database.collection('emailsQueue');
+        const emailCollection = await database.collection(process.env.EMAIL_QUEUE_COLLECTION);
         const emailSequences = await database.collection('emailSequences')
         const linkedinCollection = await database.collection('linkedin')
         const badLinkedinCollection = await database.collection('badLinkedin')
@@ -135,7 +134,6 @@ async function returnDataForProspect(email, linkedinUrl, jobName, userId, sequen
             returnedObject.company = foundEmail.linkedinData.currentCompanyDescription.name
             returnedObject.sequence = sequenceName
             returnedObject.lastContacted = convertUnixToEST(foundEmail.lastSentTime)
-            //grab sequence for number
             const emailSequence = await grabEmailSequence(emailSequences, userId, sequenceName);
             if (emailSequence !== null) {
                 returnedObject.stage = `${foundEmail.sequenceId} / ${emailSequence.steps.length}`
@@ -261,10 +259,8 @@ async function returnDataForProspect(email, linkedinUrl, jobName, userId, sequen
 function printUnixTime() {
     // Get the current time in milliseconds since January 1, 1970
     const now = Date.now();
-
     // Convert milliseconds to seconds
     const unixTime = Math.floor(now / 1000);
-
     // Print the Unix time
     console.log(unixTime);
 }
@@ -283,12 +279,10 @@ export default async function grabDataFromJobName(jobTitle, userId) {
         useUnifiedTopology: true,
         connectTimeoutMS: 65000, //increased timeout for shakey network conditions
     });
-
     try {
         await client.connect();
         const database = await client.db('users');
         const userCollection = await database.collection('userData');
-
         //grab the correct job data
         const userGrabbed = await userCollection.findOne({ userId: userId })
         const targetJobObject = userGrabbed.jobs.filter(trav => {
@@ -297,23 +291,19 @@ export default async function grabDataFromJobName(jobTitle, userId) {
             }
         })
         const targetArray = targetJobObject[0].jobDataArray
-
         var requests = []
         for (let i = 0; i < targetArray.length && i < 45; i++) {
             const email = targetArray[i].email;
             const linkedin = targetArray[i].linkedin;
             //var temp = await returnDataForProspect(email, linkedin, jobTitle, userId, targetJobObject.sequenceName)
-            //console.log(temp)
-            requests.push(returnDataForProspect(email, linkedin, jobTitle, userId, targetJobObject.sequenceName))
+            requests.push(returnDataForProspect(email, linkedin, jobTitle, userId, targetJobObject[0].sequenceName))
         }
         const values = await Promise.all(requests)
-        //console.log(values)
         printUnixTime()
         await client.close()
         noStore();
         return values
     } catch (error) {
-        //console.log(error)
         return values
     }
 }
