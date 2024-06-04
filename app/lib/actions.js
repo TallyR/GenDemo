@@ -100,17 +100,35 @@ export async function grabUserJobs() {
         useUnifiedTopology: true,
         connectTimeoutMS: 65000, //increased timeout for shakey network conditions
     });
-
     try {
         await client.connect();
         const database = await client.db('users');
         const userCollection = await database.collection('userData');
+        const jobsCollection = await database.collection(process.env.JOB_QUEUE_COLLECTION);
         const query = { userId: userId };
+        const processingJobSet = new Set();
         var foundUser = await userCollection.findOne(query);
+        var allJobs = await jobsCollection.find(query)
+        allJobs = (await allJobs.toArray());
+        for(var job of allJobs) {
+            processingJobSet.add(job.jobName)
+        }
         if (foundUser === null) {
             return []; // no jobs or user created yet
-        }
-        return foundUser.jobs;
+        }   
+        /*
+            Disable the jobs that have still not been ingested by the workers
+        */
+        console.log(processingJobSet)
+        var cc = foundUser.jobs.map(e => {
+            return {
+                ...e, 
+                stillProcessing: processingJobSet.has(e.jobTitle)
+            }
+        })
+        console.log("HERE!")
+        console.log(cc)
+        return cc;
     } catch (error) {
         console.log(error);
     }
