@@ -108,12 +108,13 @@ export default function AIMailMerge({ data }) {
                 <ErrorModal onExit={setErrorModal} showSelf={showErrorModal} errorTitle={errorTitle} errorMessage={errorMessage} />
                 <LoadingModal showSelf={loading} />
                 <div className="flex">
-                    <div className="mt-8 ml-8 w-[400px] shadow-2xl rounded-lg border-2 border-black mb-20">
+                    <div className="mt-8 ml-8 w-[500px] shadow-2xl rounded-lg border-2 border-black mb-20">
                         <div className="w-full pt-4 justify-center items-center">
                             <form action={dispatch} onSubmit={() => {
                                 setButtonMessage('Loading...')
                             }} key="unique">
-                                <p className="ml-4 mb-2 font-semibold">Upload CSV File</p>
+                                <p className="ml-4 font-semibold">Upload CSV File</p>
+                                <p className="ml-4 mb-2 mt-2 text-xs">Make sure it's a CSV file with columns titled 'Email' and 'Person Linkedin Url'</p>
                                 <input type="file" name="file" className="mb-3 ml-4" id="file" onChange={(e) => console.log(e)} />
                                 {/*If user doesn't have an AI sequence, make them choose one with the button!*/}
                                 {true &&
