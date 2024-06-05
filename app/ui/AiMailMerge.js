@@ -58,13 +58,11 @@ export default function AIMailMerge({ data }) {
             setErrorModal(true)
             setButtonMessage('Submit')
         } else if (state.error === 'no_file_upload') {
-            //console.log('no file upload!!!!!')
             setErrorTitle('No file')
             setErrorMessage("Please upload a .csv file")
             setErrorModal(true)
             setButtonMessage('Submit')
         } else if (state.error === 'not_csv_or_no_columns') {
-            //console.log('bad file upload!!!!!')
             setErrorTitle('Bad File')
             setErrorMessage("Requires a .csv file with columns titled 'Email' and 'Person Linkedin Url'.")
             setErrorModal(true)
@@ -82,6 +80,11 @@ export default function AIMailMerge({ data }) {
         } else if (state.error === "file_failed_parse") {
             setErrorTitle('Bad CSV File')
             setErrorMessage(`There is something wrong with your CSV file`)
+            setErrorModal(true)
+            setButtonMessage('Submit')
+        } else if (state.error === 'sequence_size_zero') {
+            setErrorTitle('Empty Email Sequence')
+            setErrorMessage(`The email sequence '${extractStringBeforeLastAt(state.sequenceName)}' has no steps! Please visit the 'AI Sequences' to add steps.`)
             setErrorModal(true)
             setButtonMessage('Submit')
         }
@@ -147,7 +150,6 @@ export default function AIMailMerge({ data }) {
                         Create email sequences
                     </Link>
                 </div>
-
             </div>
         )
     } else {

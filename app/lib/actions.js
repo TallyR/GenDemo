@@ -110,19 +110,19 @@ export async function grabUserJobs() {
         var foundUser = await userCollection.findOne(query);
         var allJobs = await jobsCollection.find(query)
         allJobs = (await allJobs.toArray());
-        for(var job of allJobs) {
+        for (var job of allJobs) {
             processingJobSet.add(job.jobName)
         }
         if (foundUser === null) {
             return []; // no jobs or user created yet
-        }   
+        }
         /*
             Disable the jobs that have still not been ingested by the workers
         */
         console.log(processingJobSet)
         var cc = foundUser.jobs.map(e => {
             return {
-                ...e, 
+                ...e,
                 stillProcessing: processingJobSet.has(e.jobTitle)
             }
         })
@@ -473,27 +473,45 @@ async function convertCsvBufferToJson(csvBuffer) {
 export async function processFile(prevState, formData) {
     noStore();
     var retObj = { parsedArray: null, error: null }
-
-    console.log(formData)
-
     //reset form
     if (formData.type && formData.type === 'RESET') {
         return formData.payload;
     }
-
     //check if file is not upload
     if (formData.get("file").name === 'undefined') {
         console.log('no file uploaded')
         retObj.error = 'no_file_upload'
         return retObj
     }
-
-    if(formData.get("sequence") === 'No sequences created') {
+    if (formData.get("sequence") === 'No sequences created') {
         console.log("error")
         retObj.error = 'no_sequence_created'
         return retObj
     }
-
+    //check if sequence is above zero steps
+    try {
+        const mongodbClient = new MongoClient(process.env.MONGO_DB_CONNECTION_STRING, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        });
+        await mongodbClient.connect();
+        const { userId } = auth();
+        const database = await mongodbClient.db('users');
+        const emailSequences = await database.collection('emailSequences');
+        const query = { userId: userId, sequenceName: formData.get("sequence") };
+        var foundSequence = await emailSequences.findOne(query);
+        if(foundSequence.steps.length <= 0) {
+            retObj.error = 'sequence_size_zero'
+            retObj.sequenceName = formData.get("sequence")
+            return retObj;
+        }
+    } catch (error) {
+        console.log(error)
+        mongodbClient.close()
+        retObj.error = 'sequence_size_zero' //change this shit
+        retObj.sequenceName = formData.get("sequence")
+        return retObj;
+    }
     console.log(formData)
 
     //check if email is connected
@@ -502,7 +520,7 @@ export async function processFile(prevState, formData) {
     if (!checkEmailConnected.connected) {
         console.log('email not connected')
         retObj.error = 'no_email_connected'
-        return retObj 
+        return retObj
     }
 
     //new file uploaded
@@ -611,7 +629,7 @@ export async function grabSequenceData(sequenceName) {
         sequenceName: sequenceName
     }
     var grabbedObj = {}
-    
+
     console.log("JDFKDSHFKDHFKDSJHFJKDSH")
     console.log(query)
 
@@ -726,7 +744,7 @@ export async function removeStep(sequenceName, stepPosition) {
         grabbedObj = grabbedObj.steps.filter((trav, index) => {
             if (index != stepPosition) {
                 return true
-            } 
+            }
             return false
         })
         const updateDoc = {
@@ -761,8 +779,10 @@ export async function grabEmailSequences() {
     try {
         var allUserSequences = await sequenceCollection.find(query);
         var allSequences = await allUserSequences.toArray()
-        allSequences = allSequences.map((e) => {console.log(e) 
-            return ({sequenceName: e.sequenceName, size: e.steps.length})})
+        allSequences = allSequences.map((e) => {
+            console.log(e)
+            return ({ sequenceName: e.sequenceName, size: e.steps.length })
+        })
         console.log(allSequences)
         await mongodbClient.close()
         return allSequences;
