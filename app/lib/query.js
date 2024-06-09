@@ -292,7 +292,7 @@ export default async function grabDataFromJobName(jobTitle, userId) {
         })
         const targetArray = targetJobObject[0].jobDataArray
         var requests = []
-        for (let i = 0; i < targetArray.length && i < 45; i++) {
+        for (let i = 0; i < targetArray.length; i++) {
             const email = targetArray[i].email;
             const linkedin = targetArray[i].linkedin;
             //var temp = await returnDataForProspect(email, linkedin, jobTitle, userId, targetJobObject.sequenceName)
