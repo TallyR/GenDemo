@@ -64,7 +64,7 @@ function processSequenceSteps(stepsArray) {
     console.log(stepsArray)
     return stepsArray.map((trav, index) => {
         return (
-            <tr key={index+"KEYFORDAYS"}className="border rounded-lg">
+            <tr key={index + "KEYFORDAYS"} className="border rounded-lg">
                 <td scope="row" className="w-1/2 px-3 py-3 font-small text">
                     <div className="pl-1">{trav.step_name}</div>
                 </td>
@@ -262,8 +262,6 @@ export default function NewSequence() {
                                         localStorage.removeItem("step_name")
                                         localStorage.removeItem("template")
                                         localStorage.removeItem("subject_line")
-
-                                        //add the goal
                                         localStorage.setItem("goal", goal)
                                     }}
                                     className="ml-2 whitespace-nowrap rounded-lg bg-indigo-600 px-2 py-1 text-xs text-white shadow-sm justify-center text-center hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
@@ -294,10 +292,25 @@ export default function NewSequence() {
                                                                 <div className="pl-1">{trav.step_name}</div>
                                                             </td>
                                                             <td className="w-1/4 px-3 py-2">
-                                                                <div className="pl-1">{index+1}</div>
+                                                                <div className="pl-1">{index + 1}</div>
                                                             </td>
                                                             <td className="w-1/4 px-3 py-2">
                                                                 <div className="flex">
+                                                                    <Link
+                                                                        type="button"
+                                                                        href={{ pathname: "/aisequences/editsequence/addstep/testtemplate", query: { testStep: true } }}
+                                                                        onClick={(e) => {
+                                                                           localStorage.setItem("step_name", trav.step_name)
+                                                                           localStorage.setItem("subject_line", trav.step_subject_line)
+                                                                           localStorage.setItem("template", JSON.stringify(trav.step_template))
+                                                                           localStorage.setItem("example_information_subject_line", JSON.stringify(trav.step_example_subject_lines))
+                                                                           localStorage.setItem("example_information_body", JSON.stringify(trav.step_example_bodys))
+                                                                           localStorage.setItem("goal", goal)
+                                                                        }}
+                                                                        className="ml-2 whitespace-nowrap rounded-lg bg-green-600 px-2 py-1 text-xs text-white shadow-sm justify-center text-center hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                                                                    >
+                                                                        Test
+                                                                    </Link>
                                                                     <Link
                                                                         type="button"
                                                                         href={{ pathname: "/aisequences/editsequence/addstep", query: { editStep: true, position: index } }}
@@ -306,8 +319,6 @@ export default function NewSequence() {
                                                                             localStorage.setItem("template", trav.step_template)
                                                                             localStorage.setItem("step_name", trav.step_name)
                                                                             localStorage.setItem("subject_line", trav.step_subject_line)
-
-                                                                            //add the goal
                                                                             localStorage.setItem("goal", goal)
                                                                         }}
                                                                         className="ml-2 whitespace-nowrap rounded-lg bg-indigo-600 px-2 py-1 text-xs text-white shadow-sm justify-center text-center hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"

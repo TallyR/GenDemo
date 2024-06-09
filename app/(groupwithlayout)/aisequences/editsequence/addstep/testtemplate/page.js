@@ -54,8 +54,12 @@ export default function TestTemplate() {
     //calculating if edit step
     const searchGrab = useSearchParams()
     var editStep = false;
+    var testStep = false;
     if (searchGrab.get("editStep") === "true") {
         editStep = true
+    }
+    if (searchGrab.get("testStep") === "true") {
+        testStep = true
     }
 
     const [testEmailRet, setTestEmail] = useState('')
@@ -77,7 +81,7 @@ export default function TestTemplate() {
 
     return (
         <div className="min-w-full h-dvh">
-            <Navbar url={`AI Sequences / Edit Sequence / ${editStep ? "Edit" : "Add"} Step / Test`} />
+            <Navbar url={`AI Sequences / Edit Sequence / ${testStep ? 'Test Step' : ((editStep ? "Edit" : "Add") + " Step / Test")}`} />
             <ErrorModal onExit={setErrorModal} showSelf={showErrorModal} errorTitle={errorTitle} errorMessage={errorMessage} />
             <LoadingModal showSelf={showLoadingModal} />
             <div className="p-4">
@@ -112,10 +116,12 @@ export default function TestTemplate() {
                                 step_template: localStorage.getItem("template"),
                                 step_example_subject_lines: JSON.parse(localStorage.getItem("example_information_subject_line")),
                                 step_example_bodys: JSON.parse(localStorage.getItem("example_information_body")),
-                                goal: localStorage.getItem("subject_line")
+                                goal: localStorage.getItem("goal")
                             }
                             setLoading(true)
                             const tt = await testEmail(linkedinUrl, stepData)
+                            console.log("DJKSDFHSKDJFHDSJKFHSDFHKDJFHDKSJFHDSFKHFKDSHK")
+                            console.log(stepData)
                             if (tt.error === true) {
                                 setErrorTitle("Something went wrong")
                                 setErrorMessage("Tally's models are confused right now, try a different LinkedIn profile?")
@@ -130,24 +136,27 @@ export default function TestTemplate() {
                     >
                         Test
                     </button>
-                    <button
-                        type="button"
-                        onClick={async (e) => {
-                            e.preventDefault()
-                            setLoadingModal(true)
-                            console.log("CALLING HERE")
-                            console.log(localStorage.getItem('sequence_name'));
-                            if (searchGrab.get("position") == '' || searchGrab.get("position") === "null") {
-                                await saveStep(localStorage.getItem('sequence_name'), localStorage.getItem("step_name"), localStorage.getItem("template"), JSON.parse(localStorage.getItem("example_information_subject_line")), JSON.parse(localStorage.getItem("example_information_body")), localStorage.getItem("subject_line"))
-                            }
-                            else {
-                                await saveStep(localStorage.getItem('sequence_name'), localStorage.getItem("step_name"), localStorage.getItem("template"), JSON.parse(localStorage.getItem("example_information_subject_line")), JSON.parse(localStorage.getItem("example_information_body")), localStorage.getItem("subject_line"), searchGrab.get("position"))
-                            }
-                        }}
-                        className="ml-4 whitespace-nowrap rounded-lg bg-green-600 px-7 py-3 text-sm text-white shadow-sm justify-center text-center hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-                    >
-                        Save step
-                    </button>
+                    {
+                        !testStep &&
+                        <button
+                            type="button"
+                            onClick={async (e) => {
+                                e.preventDefault()
+                                setLoadingModal(true)
+                                console.log("CALLING HERE")
+                                console.log(localStorage.getItem('sequence_name'));
+                                if (searchGrab.get("position") == '' || searchGrab.get("position") === "null") {
+                                    await saveStep(localStorage.getItem('sequence_name'), localStorage.getItem("step_name"), localStorage.getItem("template"), JSON.parse(localStorage.getItem("example_information_subject_line")), JSON.parse(localStorage.getItem("example_information_body")), localStorage.getItem("subject_line"))
+                                }
+                                else {
+                                    await saveStep(localStorage.getItem('sequence_name'), localStorage.getItem("step_name"), localStorage.getItem("template"), JSON.parse(localStorage.getItem("example_information_subject_line")), JSON.parse(localStorage.getItem("example_information_body")), localStorage.getItem("subject_line"), searchGrab.get("position"))
+                                }
+                            }}
+                            className="ml-4 whitespace-nowrap rounded-lg bg-green-600 px-7 py-3 text-sm text-white shadow-sm justify-center text-center hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                        >
+                            Save step
+                        </button>
+                    }
                 </div>
                 {
                     loading &&

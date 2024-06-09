@@ -121,10 +121,20 @@ function repopulateAllExamples(examples_obj) {
     }
 }
 
+function removeOuterQuotes(str) {
+    if(str === null || str === undefined || str.length === 0) {
+        return str;
+    }
+    if(str.charAt(0) === "\"" && str.charAt(str.length-1) === "\"") {
+        return str.slice(1,-1)
+    }
+}
+
 async function generateEmail(linkedinUrl, stepData) {
     const parsedLinked = await grabLinkedinDataAndGenerateEmail(linkedinUrl, stepData.step_subject_line, stepData.step_template)
     if (stepData.step_example_subject_lines === null && stepData.step_example_bodys === null) {
-        return parsedLinked;
+        parsedLinked.body = removeOuterQuotes(parsedLinked.body.replace(/\\n/g, '\n')); //causing issues where newlines aren't being delimited well!
+        return parsedLinked
     }
 
     //this should only be ran if there are examples to be re-populated
