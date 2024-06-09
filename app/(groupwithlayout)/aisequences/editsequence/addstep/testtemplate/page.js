@@ -81,12 +81,12 @@ export default function TestTemplate() {
 
     return (
         <div className="min-w-full h-dvh">
-            <Navbar url={`AI Sequences / Edit Sequence / ${testStep ? 'Test Step' : ((editStep ? "Edit" : "Add") + " Step / Test")}`} />
+            <Navbar url={`AI Sequences / Edit Sequence / ${testStep ? 'Quick Write' : ((editStep ? "Edit" : "Add") + " Step / Test")}`} />
             <ErrorModal onExit={setErrorModal} showSelf={showErrorModal} errorTitle={errorTitle} errorMessage={errorMessage} />
             <LoadingModal showSelf={showLoadingModal} />
             <div className="p-4">
                 <label className="block text-xl font-medium leading-6 text-gray-900">
-                    {`Paste a Linkedin URL to test your “${stepName}” step`}
+                    {testStep ? `Paste a Linkedin URL to let Tally write the "${stepName}" email`: `Paste a Linkedin URL to test your “${stepName}” step`}
                 </label>
                 <label className="mt-2 mb-2 block text-sm leading-6 text-gray-900">
                     {`Takes ~30 seconds to process, be patient!`}

@@ -309,7 +309,7 @@ export default function NewSequence() {
                                                                         }}
                                                                         className="ml-2 whitespace-nowrap rounded-lg bg-green-600 px-2 py-1 text-xs text-white shadow-sm justify-center text-center hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
                                                                     >
-                                                                        Test
+                                                                        Quick Write
                                                                     </Link>
                                                                     <Link
                                                                         type="button"
