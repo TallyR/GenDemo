@@ -74,12 +74,12 @@ async function grabLinkedinDataAndGenerateEmail(linkedinUrl, subject_line_templa
     }
     //populating subject line template
     subject_line_template = replaceAllOccurrences(subject_line_template, "{{first_name}}", linkedinData.firstName)
-    subject_line_template = replaceAllOccurrences(subject_line_template, "{{last_name}}", linkedinData.companyName)
+    subject_line_template = replaceAllOccurrences(subject_line_template, "{{last_name}}", linkedinData.lastName)
     subject_line_template = replaceAllOccurrences(subject_line_template, "{{full_name}}", linkedinData.fullName)
     subject_line_template = replaceAllOccurrences(subject_line_template, "{{company_name}}", linkedinData.companyName)
     //populating body template
     body_template = replaceAllOccurrences(body_template, "{{first_name}}", linkedinData.firstName)
-    body_template = replaceAllOccurrences(body_template, "{{last_name}}", linkedinData.companyName)
+    body_template = replaceAllOccurrences(body_template, "{{last_name}}", linkedinData.lastName)
     body_template = replaceAllOccurrences(body_template, "{{full_name}}", linkedinData.fullName)
     body_template = replaceAllOccurrences(body_template, "{{company_name}}", linkedinData.companyName)
     return {
